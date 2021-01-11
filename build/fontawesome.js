@@ -9,16 +9,10 @@ const solid = [
 ]
 
 const regular = [
-  'faClock',
 ]
 
 const brands = [
-  'faFontAwesome',
-  'faGitAlt',
   'faGithub',
-  'faGoogle',
-  'faNode',
-  'faVuejs',
 ]
   
 export { solid, regular, brands }

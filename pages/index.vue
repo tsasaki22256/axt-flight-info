@@ -116,14 +116,7 @@
           本サイトの表示内容について、公共交通事業者への直接の問合せは行わないでください．
         </p>
         <div>
-          <div class="mb-2">Powered by :</div>
-          <a class="footer-icon-link" href="https://fontawesome.com/"><font-awesome-icon class="footer-icon" :icon="['fab', 'font-awesome']" size="2x"/></a>
-          <a class="footer-icon-link" href="https://git-scm.com/"><font-awesome-icon class="footer-icon" :icon="['fab', 'git-alt']" size="2x"/></a>
-          <a class="footer-icon-link" href="https://github.com/"><font-awesome-icon class="footer-icon" :icon="['fab', 'github']" size="2x"/></a>
-          <a class="footer-icon-link" href="https://nodejs.org/"><font-awesome-icon class="footer-icon" :icon="['fab', 'node']" size="2x"/></a>
-          <a class="footer-icon-link" href="https://jp.vuejs.org/"><font-awesome-icon class="footer-icon" :icon="['fab', 'vuejs']" size="2x"/></a>
-          <a class="footer-icon-link" href="https://nuxtjs.org/"><font-awesome-icon class="footer-icon" :icon="['fas', 'external-link-alt']" size="2x"/></a>
-          <a class="footer-icon-link" href="https://bulma.io/"><font-awesome-icon class="footer-icon" :icon="['fas', 'external-link-alt']" size="2x"/></a>
+          <a class="footer-icon-link" href="https://github.com/tsasaki22256/axt-flight-info"><font-awesome-icon class="footer-icon" :icon="['fab', 'github']" size="2x"/></a>
         </div>
       </div>
     </footer>
