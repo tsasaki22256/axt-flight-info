@@ -210,7 +210,7 @@ export default {
     // 運行情報テーブルの行(<TR>)のスタイル
     rowStyle(info, index) {
       return {
-        even: index % 2 == 0,
+        even: (this.hideCancelled ? info.index2 : index) % 2 == 0,
         cancelled: info.cancelled,
         delayed: info.delayTime >= 30,
         'est-arr': info.isEstimatedArrivalTime,

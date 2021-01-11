@@ -172,6 +172,21 @@ async function updateFlightData(params) {
   arr.sort((a, b) => a.scheduledArrivalTime > b.scheduledArrivalTime ? 1 : -1);
   dep.sort((a, b) => a.scheduledDepartureTime > b.scheduledDepartureTime ? 1 : -1);
 
+  // 欠航便を無視した行インデックス
+  for (let i = 0, x = 0; i < arr.length; i++) {
+    arr[i].index2 = x;
+    if (!arr[i].cancelled) {
+      x++;
+    }
+  }
+
+  for (let i = 0, x = 0; i < dep.length; i++) {
+    dep[i].index2 = x;
+    if (!dep[i].cancelled) {
+      x++;
+    }
+  }
+
   // データ取得日時
   params.date = new Date(date).toLocaleString();
 }
