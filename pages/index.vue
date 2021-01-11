@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-show="firstUpdating">
     <section class="hero is-dark">
       <div class="hero-body custom-hero-body has-text-centered">
         <h1 class="title">
@@ -136,10 +136,12 @@ export default {
       simple: false,
       hideCancelled: false,
       updating: false,
+      firstUpdating: false,
     }
   },
 
   mounted() {
+    this.firstUpdating = true;
     this.updateFlightData();
 
     // 3分毎にデータ更新
