@@ -34,7 +34,7 @@ ODPT_CONSUMERKEY=ここにアクセストークンを入力
 npm run generate
 
 # Docker使用の場合:
-docker-compose run --service-ports app npm run generate
+docker-compose run app npm run generate
 ```
 
 HTML の出力後は、下記コマンドによりローカルサーバーを起動し `http://localhost:3000` へアクセスして本アプリを利用することができます。
