@@ -6,7 +6,7 @@
 
 ## Usage
 
-`Dockerfile`、`docker-compose.yml` を同梱していますので、Docker が利用できる場合はすぐに環境を構築できます。
+`Dockerfile`、`docker-compose.yml` を同梱していますので、[Docker](https://www.docker.com/get-started) が利用できる場合はすぐに環境を構築できます。
 
 ```
 docker-compose build
@@ -48,4 +48,4 @@ docker-compose run --service-ports app npm run start
 
 ## License
 
-MIT License.
+[MIT License.](./LICENSE)
