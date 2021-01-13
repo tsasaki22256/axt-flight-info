@@ -1,6 +1,6 @@
 <template>
   <div v-show="firstUpdating">
-    <PageTitleArea :updateTime="date2" />
+    <PageTitleArea :updateTime="time" />
 
     <section class="section section-thin">
       <div class="control-area">
@@ -111,7 +111,7 @@ export default {
       arr: [],
       dep: [],
       date: '',
-      date2: '',
+      time: '',
       dateFetch: new Date(),
       elapsed: 99999,
       simple: false,
@@ -161,6 +161,7 @@ export default {
         arr: [],
         dep: [],
         date: '',
+        time: '',
         consumerkey: this.$config.ODPT_CONSUMERKEY,
       };
 
@@ -169,13 +170,8 @@ export default {
       this.arr = params.arr;
       this.dep = params.dep;
       this.date = params.date;
+      this.time = params.time;
 
-      // ページ上部タイトル横に表示するデータ更新時間
-      const m = this.date.match(/([0-9]+:[0-9]+):[0-9]+/);
-      if (m) {
-        this.date2 = m[1];
-      }
-      
       this.updating = false;
 
       // データ更新からの経過時間を更新（更新ボタン有効／無効切替用）

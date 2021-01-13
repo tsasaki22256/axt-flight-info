@@ -189,6 +189,12 @@ async function updateFlightData(params) {
 
   // データ取得日時
   params.date = new Date(date).toLocaleString();
+
+  // 時間
+  const m = params.date.match(/([0-9]+:[0-9]+):[0-9]+/);
+  if (m) {
+    params.time = m[1];
+  }
 }
 
 export default ({}, inject) => {
