@@ -18,6 +18,60 @@
       </div>
     </section>
 
+      <!-- <div v-for="(a, index) in comb" :key="index">
+        {{ a.arr ? a.arr.number: '' }} / {{ a.dep ? a.dep.number : '' }}
+      </div> -->
+
+    <section class="section section-thin">
+      <table class="table is-fullwidth is-bordered table-fi">
+        <tbody>
+          <tr :class="combinedRowStyle(a, index)" v-for="(a, index) in comb" :key="index">
+            <td class="fi-number">
+              <AirlineLogo :airline="a.arr.airline || a.dep.airline" />
+              <span class="num">{{ a.arr.number }}</span>
+            </td>
+            <td class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">{{ a.arr.aircraftType }}</td>
+            <td class="fi-airport">{{ a.arr.origin }}</td>
+            <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.arr.scheduledDepartureTime }}</td>
+            <td class="fi-time is-hidden-touch-custom" v-if="!simple">
+              <FiTableColoredtime :time="a.arr.actualDepartureTime" :isActual="!a.arr.isEstimatedDepartureTime" />
+            </td>
+            <td class="fi-time">{{ a.arr.scheduledArrivalTime }}</td>
+            <td class="fi-time">
+              <FiTableColoredtime :time="a.arr.actualArrivalTime" :delay="a.arr.delayTime" :isActual="!a.arr.isEstimatedArrivalTime" />
+            </td>
+            <td class="fi-status">
+              <FiTableStatus :status="a.arr.status" :cancelled="a.arr.cancelled" />
+            </td>
+            <td class="fi-text is-hidden-touch-custom" v-if="!simple">
+              <FiTableInfo :infoSummary="a.arr.infoSummary" :infoText="a.arr.infoText" />
+            </td>
+
+            <td class="fi-number">
+              <!-- <AirlineLogo :airline="a.dep.airline || a.arr.airline" /> -->
+              <span class="num">{{ a.dep.number }}</span>
+            </td>
+            <td class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">{{ a.dep.aircraftType }}</td>
+            <td class="fi-airport">{{ a.dep.destination }}</td>
+            <td class="fi-time">{{ a.dep.scheduledDepartureTime }}</td>
+            <td class="fi-time">
+              <FiTableColoredtime :time="a.dep.actualDepartureTime" :delay="a.dep.delayTime" :isActual="!a.dep.isEstimatedDepartureTime" />
+            </td>
+            <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.dep.scheduledArrivalTime }}</td>
+            <td class="fi-time is-hidden-touch-custom" v-if="!simple">
+              <FiTableColoredtime :time="a.dep.actualArrivalTime" :isActual="!a.dep.isEstimatedArrivalTime" />
+            </td>
+            <td class="fi-status">
+              <FiTableStatus :status="a.dep.status" :cancelled="a.dep.cancelled" />
+            </td>
+            <td class="fi-text is-hidden-touch-custom" v-if="!simple">
+              <FiTableInfo :infoSummary="a.dep.infoSummary" :infoText="a.dep.infoText" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
     <section class="section section-thin">
       <div class="columns is-widescreen is-size-7-touch">
         <div class="column custom-column">
@@ -114,6 +168,7 @@ export default {
     return {
       arr: [],
       dep: [],
+      comb: [],
       date: '',
       time: '',
       dateFetch: new Date(),
@@ -164,6 +219,7 @@ export default {
         axios: this.$axios,
         arr: [],
         dep: [],
+        comb: [],
         date: '',
         time: '',
         consumerkey: this.$config.ODPT_CONSUMERKEY,
@@ -173,6 +229,7 @@ export default {
 
       this.arr = params.arr;
       this.dep = params.dep;
+      this.comb = params.comb;
       this.date = params.date;
       this.time = params.time;
 
@@ -181,14 +238,27 @@ export default {
       // データ更新からの経過時間を更新（更新ボタン有効／無効切替用）
       this.dateFetch = new Date();
       this.elapsed = new Date() - this.dateFetch;
+
+      console.log(this.comb);
     },
 
     // 運行情報テーブルの行(<TR>)のスタイル
     rowStyle(info, index) {
       return {
         even: (this.hideCancelled ? info.index2 : index) % 2 == 0,
-        cancelled: info.cancelled,
         'is-hidden': info.cancelled && this.hideCancelled,
+      };
+    },
+
+    combinedRowStyle(info, index) {
+      const cancelled =
+        (info.arr.cancelled && info.dep.cancelled) ||
+        (info.arr.number === '' && info.dep.cancelled) ||
+        (info.arr.cancelled && info.dep.number === '');
+
+      return {
+        even: index % 2 == 0,
+        'is-hidden': cancelled && this.hideCancelled,
       };
     },
 

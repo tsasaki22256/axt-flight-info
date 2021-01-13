@@ -1,5 +1,31 @@
 import axios from 'axios';
 
+const numberPair = [
+  ['', '402'],
+  ['', '1652'],
+  ['161', '162'],
+  ['401', '404'],
+  ['1837', '1838'],
+  ['2171', '2172'],
+  ['1651', '1831'],
+  ['403', '406'],
+  ['2821', '2822'],
+  ['163', '164'],
+  ['1653', '1654'],
+  ['1832', '1833'],
+  ['2173', '2174'],
+  ['405', '408'],
+  ['1839', '1840'],
+  ['165', '166'],
+  ['1834', '1656'],
+  ['2179', '2176'],
+  ['407', '410'],
+  ['2827', '2828'],
+  ['167', '168'],
+  ['1655', ''],
+  ['409', ''],
+];
+
 function getAirportName(id) {
   switch (id) {
     case 'odpt.Airport:CTS': return '新千歳';
@@ -80,12 +106,8 @@ async function updateFlightData(params) {
       infoSummary: r['odpt:flightInformationSummary']?.ja,
       infoText: r['odpt:flightInformationText']?.ja,
       astatus: getFlightStatusTitle(r['odpt:flightStatus']),
+      date: r['dc:date'],
     });
-
-    // 最新の更新日時を取得
-    if (r['dc:date'] && date < r['dc:date']) {
-      date = r['dc:date'];
-    }
   }
 
   for (let r of res2) {
@@ -95,11 +117,7 @@ async function updateFlightData(params) {
       arr[index].scheduledDepartureTime = r['odpt:scheduledDepartureTime'];
       arr[index].isEstimatedDepartureTime = r['odpt:estimatedDepartureTime'] ? true : false;
       arr[index].dstatus = getFlightStatusTitle(r['odpt:flightStatus']);
-    }
-
-    // 最新の更新日時を取得
-    if (r['dc:date'] && date < r['dc:date']) {
-      date = r['dc:date'];
+      arr[index].date = arr[index].date < r['dc:date'] ? r['dc:date'] : arr[index].date;
     }
   }
 
@@ -115,12 +133,8 @@ async function updateFlightData(params) {
       isEstimatedArrivalTime: r['odpt:estimatedArrivalTime'] ? true : false,
       scheduledArrivalTime: r['odpt:scheduledArrivalTime'],
       astatus: getFlightStatusTitle(r['odpt:flightStatus']),
+      date: r['dc:date'],
     });
-
-    // 最新の更新日時を取得
-    if (r['dc:date'] && date < r['dc:date']) {
-      date = r['dc:date'];
-    }
   }
 
   for (let r of res4) {
@@ -132,11 +146,20 @@ async function updateFlightData(params) {
       dep[index].infoSummary = r['odpt:flightInformationSummary']?.ja;
       dep[index].infoText = r['odpt:flightInformationText']?.ja;
       dep[index].dstatus = getFlightStatusTitle(r['odpt:flightStatus']);
+      dep[index].date = dep[index].date < r['dc:date'] ? r['dc:date'] : dep[index].date;
     }
+  }
 
-    // 最新の更新日時を取得
-    if (r['dc:date'] && date < r['dc:date']) {
-      date = r['dc:date'];
+  // 最新の更新日時を取得
+  for (let i = 0; i < arr.length; i++) {
+    if (date < arr[i].date) {
+      date = arr[i].date;
+    }
+  }
+
+  for (let i = 0; i < dep.length; i++) {
+    if (date < dep[i].date) {
+      date = dep[i].date;
     }
   }
 
@@ -186,6 +209,81 @@ async function updateFlightData(params) {
       x++;
     }
   }
+
+  // 機番をキーとして検索するための辞書
+  const refArr = {};
+  const refDep = {};
+
+  for (let i = 0; i < arr.length; i++) {
+    refArr[arr[i].number] = arr[i];
+  }
+
+  for (let i = 0; i < dep.length; i++) {
+    refDep[dep[i].number] = dep[i];
+  }
+
+  // 空のオブジェクト
+  const emptyData = {
+    airline: '',
+    number: '',
+    aircraftType: '',
+    origin: '',
+    actualArrivalTime: '',
+    isEstimatedArrivalTime: false,
+    scheduledArrivalTime: '',
+    infoSummary: '',
+    infoText: '',
+    astatus: '',
+    actualDepartureTime: '',
+    isEstimatedDepartureTime: false,
+    scheduledDepartureTime: '',
+    infoSummary: '',
+    infoText: '',
+    dstatus: '',
+    date: '',
+    status: '',
+    delayTime: 0,
+    cancelled: false,
+  };
+
+  // 到着便・出発便を結合したデータを作成
+  for (let i = 0; i < numberPair.length; i++) {
+    const numa = numberPair[i][0];
+    if (numa === '') continue;
+
+    const numd = numberPair[i][1];
+    const refa = (numa === '') ? Object.assign({}, emptyData) : refArr[numa];
+    const refd = (numd === '') ? Object.assign({}, emptyData) : refDep[numd];
+
+    params.comb.push({
+      arr: refa,
+      dep: refd,
+    });
+  }
+
+  // ソート
+  params.comb.sort((a, b) => a.arr.scheduledArrivalTime > b.arr.scheduledArrivalTime ? 1 : -1);
+
+  // 始発便
+  const comb2 = [];
+  for (let i = 0; i < numberPair.length; i++) {
+    const numa = numberPair[i][0];
+    if (numa !== '') continue;
+
+    const numd = numberPair[i][1];
+    const refa = (numa === '') ? Object.assign({}, emptyData) : refArr[numa];
+    const refd = (numd === '') ? Object.assign({}, emptyData) : refDep[numd];
+
+    comb2.push({
+      arr: refa,
+      dep: refd,
+    });
+  }
+
+  // ソート
+  comb2.sort((a, b) => a.dep.scheduledDepartureTime > b.dep.scheduledDepartureTime ? 1 : -1);
+
+  params.comb = [...comb2, ...params.comb];
 
   // データ取得日時
   params.date = new Date(date).toLocaleString();
