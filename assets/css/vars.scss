@@ -6,3 +6,10 @@ $body-color: $white-bis;
 $table-cell-border: solid 1px $grey;
 $footer-background-color: $black-bis;
 $footer-color: $white-bis;
+
+/* モバイル用ブレークポイント */
+@mixin touch {
+  @media screen and (max-width: 1216px) { /* 1023 => 1216 */
+    @content;
+  }
+}

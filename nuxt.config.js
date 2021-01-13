@@ -1,6 +1,7 @@
 import * as FontAwesome from './build/fontawesome'
 
 export default {
+  components: true,
   ssr: true,
 	target: 'static',
   head: {
@@ -17,7 +18,8 @@ export default {
   ],
   buildModules: [
     ['@nuxtjs/fontawesome', { component: 'fontAwesome', suffix: true }],
-    'nuxt-purgecss'
+    'nuxt-purgecss',
+    '@nuxtjs/style-resources',
   ],
   fontawesome: {
     icons: {

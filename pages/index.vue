@@ -1,12 +1,6 @@
 <template>
   <div v-show="firstUpdating">
-    <section class="hero is-dark">
-      <div class="hero-body custom-hero-body has-text-centered">
-        <h1 class="title">
-          秋田空港運行情報{{ date2 ? '【' + date2 + '更新】' : '' }}
-        </h1>
-      </div>
-    </section>
+    <PageTitleArea :updateTime="date2" />
 
     <section class="section section-thin">
       <div class="control-area">
@@ -27,7 +21,7 @@
     <section class="section section-thin">
       <div class="columns is-widescreen is-size-7-touch">
         <div class="column custom-column">
-          <table class="table is-fullwidth is-bordered table-arrivals">
+          <table class="table is-fullwidth is-bordered table-fi table-arrivals">
             <tbody>
               <tr>
                 <td class="table-head" colspan="10"><font-awesome-icon icon="plane-arrival"/> 到着便 - Arrivals</td>
@@ -43,7 +37,7 @@
               </tr>
               <tr :class="rowStyle(a, index)" v-for="(a, index) in arr" :key="'arr-' + index">
                 <td class="fi-number">
-                  <span class="logo" :class="{ logoana: a.airline == 'ANA', logojal: a.airline == 'JAL' }">{{ a.airline }}</span>
+                  <AirlineLogo :airline="a.airline" />
                   <span class="num">{{ a.number }}</span>
                 </td>
                 <td class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">{{ a.aircraftType }}</td>
@@ -51,15 +45,14 @@
                 <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.scheduledDepartureTime }}</td>
                 <td class="fi-time fi-actual-dep-time is-hidden-touch-custom" v-if="!simple">{{ a.actualDepartureTime }}</td>
                 <td class="fi-time">{{ a.scheduledArrivalTime }}</td>
-                <td class="fi-time fi-actual-arr-time">{{ a.actualArrivalTime }}<span class="delay-time is-hidden-mobile">{{ a.delayTime ? ' (' + a.delayTime + ')' : '' }}</span></td>
+                <td class="fi-time fi-actual-arr-time">
+                  <FiTableTimewithdelay :time="a.actualArrivalTime" :delay="a.delayTime" />
+                </td>
                 <td class="fi-status">
-                  <span v-if="a.cancelled">
-                    <font-awesome-icon icon="times" size="lg"/>
-                  </span>
-                  {{ a.status }}
+                  <FiTableStatus :status="a.status" :cancelled="a.cancelled" />
                 </td>
                 <td class="fi-text is-hidden-touch-custom" v-if="!simple">
-                  {{ a.infoSummary }}<span v-if="a.infoSummary && a.infoText"> - </span>{{ a.infoText }}
+                  <FiTableInfo :infoSummary="a.infoSummary" :infoText="a.infoText" />
                 </td>
               </tr>
             </tbody>
@@ -67,7 +60,7 @@
         </div>
 
         <div class="column custom-column">
-          <table class="table is-fullwidth is-bordered table-departures">
+          <table class="table is-fullwidth is-bordered table-fi table-departures">
             <tbody>
               <tr>
                 <td class="table-head" colspan="10"><font-awesome-icon icon="plane-departure"/> 出発便 - Departures</td>
@@ -83,23 +76,22 @@
               </tr>
               <tr :class="rowStyle(a, index)" v-for="(a, index) in dep" :key="'dep-' + index">
                 <td class="fi-number">
-                  <span class="logo" :class="{ logoana: a.airline == 'ANA', logojal: a.airline == 'JAL' }">{{ a.airline }}</span>
+                  <AirlineLogo :airline="a.airline" />
                   <span class="num">{{ a.number }}</span>
                 </td>
                 <td class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">{{ a.aircraftType }}</td>
                 <td class="fi-airport">{{ a.destination }}</td>
                 <td class="fi-time">{{ a.scheduledDepartureTime }}</td>
-                <td class="fi-time fi-actual-dep-time">{{ a.actualDepartureTime }}<span class="delay-time is-hidden-mobile">{{ a.delayTime ? ' (' + a.delayTime + ')' : '' }}</span></td>
+                <td class="fi-time fi-actual-dep-time">
+                  <FiTableTimewithdelay :time="a.actualDepartureTime" :delay="a.delayTime" />
+                </td>
                 <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.scheduledArrivalTime }}</td>
                 <td class="fi-time fi-actual-arr-time is-hidden-touch-custom" v-if="!simple">{{ a.actualArrivalTime }}</td>
                 <td class="fi-status">
-                  <span v-if="a.cancelled">
-                    <font-awesome-icon icon="times" size="lg"/>
-                  </span>
-                  {{ a.status }}
+                  <FiTableStatus :status="a.status" :cancelled="a.cancelled" />
                 </td>
                 <td class="fi-text is-hidden-touch-custom" v-if="!simple">
-                  {{ a.infoSummary }}<span v-if="a.infoSummary && a.infoText"> - </span>{{ a.infoText }}
+                  <FiTableInfo :infoSummary="a.infoSummary" :infoText="a.infoText" />
                 </td>
               </tr>
             </tbody>
@@ -108,18 +100,7 @@
       </div>
     </section>
 
-    <footer class="footer custom-footer">
-      <div class="content">
-        <p>
-          本サイトの航空機発着情報は、<a href="https://www.odpt.org/">公共交通オープンデータセンター</a>により提供されるデータを取得・加工し表示しているものです．<br>
-          公共交通事業者により提供されたデータを元にしていますが、必ずしも正確・完全なものとは限りません．<br>
-          本サイトの表示内容について、公共交通事業者への直接の問合せは行わないでください．
-        </p>
-        <div>
-          <a class="footer-icon-link" href="https://github.com/tsasaki22256/axt-flight-info"><font-awesome-icon class="footer-icon" :icon="['fab', 'github']" size="2x"/></a>
-        </div>
-      </div>
-    </footer>
+    <PageFooterArea />
   </div>
 </template>
 
@@ -207,7 +188,6 @@ export default {
       return {
         even: (this.hideCancelled ? info.index2 : index) % 2 == 0,
         cancelled: info.cancelled,
-        delayed: info.delayTime >= 30,
         'est-arr': info.isEstimatedArrivalTime,
         'est-dep': info.isEstimatedDepartureTime,
         'is-hidden': info.cancelled && this.hideCancelled,
@@ -223,51 +203,16 @@ export default {
 
 <style lang="scss" scoped>
 /* purgecss start ignore */
-
-/* モバイル用ブレークポイント */
-@mixin touch {
-  @media screen and (max-width: 1216px) { /* 1023 => 1216 */
-    @content;
-  }
-}
-
-.is-hidden-touch-custom {
-  @include touch {
-    display: none !important;
-  }
-}
-
-.custom-hero-body {
-  padding: 0.6rem 0rem 0.6rem 0rem;
-}
-.custom-hero-body h1 {
-  font-size: 1.5rem;
-  letter-spacing: 0.1rem;
-  transform: scale(0.9, 1);
-
-  @include touch {
-    letter-spacing: 0.08rem;
-    font-size: 1.25rem;
-  }
-}
-
-.section-thin {
-  padding: 0.75rem 1.5rem;
-
-  @include touch {
-    padding: 0.75rem 0.75rem;
-  }
-}
-
 .control-area {
   text-align: right;
 }
 
 .custom-column {
   padding-top: 0;
+  padding-bottom: 1.5rem;
 }
 
-th, td {
+.table-fi th, .table-fi td {
   color: hsl(0, 0%, 98%);
   padding: 0.4rem 0.5rem;
   background-color: hsl(0, 0%, 21%);
@@ -275,17 +220,17 @@ th, td {
   vertical-align: middle;
 }
 
-.even > td {
+.table-fi .even > td {
   background-color: hsl(0, 0%, 29%);
 }
 
-th {
+.table-fi th {
   background-color: hsl(0, 0%, 14%);
   text-align: center !important;
   word-break: keep-all;
 }
 
-.table.is-bordered td, .table.is-bordered th {
+.table-fi.is-bordered td, .table-fi.is-bordered th {
   border-width: 1px;
   border-style: solid;
   border-color: hsl(0, 0%, 10%) hsl(0, 0%, 10%) hsl(0, 0%, 10%) hsl(0, 0%, 10%);
@@ -305,41 +250,9 @@ th {
   color: hsl(141, 80%, 60%);
 }
 
-.empty-line {
-  height: 480px;
-}
-.empty-line td {
-  text-align: center;
-}
-
 .fi-number {
   word-break: keep-all;
   white-space: nowrap;
-}
-.fi-number > .logo {
-  font-style: italic;
-  font-weight: bold;
-  font-family: verdana, arial, Helvetica, sans-serif;
-  display: inline-block;
-  padding: 0.1rem 0.3rem;
-  margin-right: 0.2rem;
-  min-width: 3.2rem;
-  text-align: center;
-  border: solid 1px hsl(0, 0%, 80%);
-
-  @include touch {
-    padding: 0.1rem 0.1rem;
-    margin-right: 0.1rem;
-    min-width: 3.0rem;
-  }
-}
-.fi-number > .logoana {
-  background-color: rgb(33,61,149);
-  color: white;
-}
-.fi-number > .logojal {
-  background-color: crimson;
-  color: white;
 }
 .fi-number > .num {
   font-weight: bold;
@@ -369,48 +282,15 @@ th {
   color: lime;
 }
 
-.delayed .delay-time {
-  color: gold;
-}
-
 .fi-status {
   word-break: keep-all;
   white-space: nowrap;
-}
-.cancelled > .fi-status {
-  color: red;
 }
 
 .fi-text {
   font-size: 0.7rem;
   font-weight: normal;
   color: hsl(0, 0%, 98%);
-}
-
-.custom-footer .content {
-  font-size: 0.8rem;
-  padding-left: 3rem;
-  padding-right: 3rem;
-  padding-top: 2rem;
-  line-height: 1.4rem;
-  border-top: solid 1px gray;
-
-  @include touch {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-
-.custom-footer .content p {
-  margin-bottom: 2rem;
-}
-
-.footer-icon-link {
-  text-decoration: none;
-  color: hsl(0, 0%, 98%);
-}
-.footer-icon {
-  margin-right: 0.2rem;
 }
 
 /* アニメーション */

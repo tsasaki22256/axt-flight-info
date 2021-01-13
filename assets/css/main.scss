@@ -1,2 +1,16 @@
 @import "~assets/css/vars.scss";
 @import "~bulma";
+
+.is-hidden-touch-custom {
+  @include touch {
+    display: none !important;
+  }
+}
+
+.section-thin {
+  padding: 0.75rem 1.5rem;
+
+  @include touch {
+    padding: 0.75rem 0.75rem;
+  }
+}
