@@ -1,5 +1,5 @@
 <template>
-  <div v-show="firstUpdating">
+  <div v-show="mounted">
     <PageTitleArea :updateTime="time" />
 
     <section class="section section-thin">
@@ -21,11 +21,11 @@
     <section class="section section-thin">
       <div class="columns is-widescreen is-size-7-touch">
         <div class="column custom-column">
-          <table class="table is-fullwidth is-bordered table-fi table-arrivals">
+          <div class="table-head-line table-head-line-arrivals">
+            <font-awesome-icon icon="plane-arrival"/> 到着便 - Arrivals
+          </div>
+          <table class="table is-fullwidth is-bordered table-fi">
             <tbody>
-              <tr>
-                <td class="table-head" colspan="10"><font-awesome-icon icon="plane-arrival"/> 到着便 - Arrivals</td>
-              </tr>
               <tr>
                 <th class="fi-number">便名</th>
                 <th class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">機体</th>
@@ -43,10 +43,12 @@
                 <td class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">{{ a.aircraftType }}</td>
                 <td class="fi-airport">{{ a.origin }}</td>
                 <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.scheduledDepartureTime }}</td>
-                <td class="fi-time fi-actual-dep-time is-hidden-touch-custom" v-if="!simple">{{ a.actualDepartureTime }}</td>
+                <td class="fi-time is-hidden-touch-custom" v-if="!simple">
+                  <FiTableColoredtime :time="a.actualDepartureTime" :isActual="!a.isEstimatedDepartureTime" />
+                </td>
                 <td class="fi-time">{{ a.scheduledArrivalTime }}</td>
-                <td class="fi-time fi-actual-arr-time">
-                  <FiTableTimewithdelay :time="a.actualArrivalTime" :delay="a.delayTime" />
+                <td class="fi-time">
+                  <FiTableColoredtime :time="a.actualArrivalTime" :delay="a.delayTime" :isActual="!a.isEstimatedArrivalTime" />
                 </td>
                 <td class="fi-status">
                   <FiTableStatus :status="a.status" :cancelled="a.cancelled" />
@@ -60,11 +62,11 @@
         </div>
 
         <div class="column custom-column">
-          <table class="table is-fullwidth is-bordered table-fi table-departures">
+          <div class="table-head-line table-head-line-departures">
+            <font-awesome-icon icon="plane-departure"/> 出発便 - Departures
+          </div>
+          <table class="table is-fullwidth is-bordered table-fi">
             <tbody>
-              <tr>
-                <td class="table-head" colspan="10"><font-awesome-icon icon="plane-departure"/> 出発便 - Departures</td>
-              </tr>
               <tr>
                 <th class="fi-number">便名</th>
                 <th class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">機体</th>
@@ -82,11 +84,13 @@
                 <td class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">{{ a.aircraftType }}</td>
                 <td class="fi-airport">{{ a.destination }}</td>
                 <td class="fi-time">{{ a.scheduledDepartureTime }}</td>
-                <td class="fi-time fi-actual-dep-time">
-                  <FiTableTimewithdelay :time="a.actualDepartureTime" :delay="a.delayTime" />
+                <td class="fi-time">
+                  <FiTableColoredtime :time="a.actualDepartureTime" :delay="a.delayTime" :isActual="!a.isEstimatedDepartureTime" />
                 </td>
                 <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.scheduledArrivalTime }}</td>
-                <td class="fi-time fi-actual-arr-time is-hidden-touch-custom" v-if="!simple">{{ a.actualArrivalTime }}</td>
+                <td class="fi-time is-hidden-touch-custom" v-if="!simple">
+                  <FiTableColoredtime :time="a.actualArrivalTime" :isActual="!a.isEstimatedArrivalTime" />
+                </td>
                 <td class="fi-status">
                   <FiTableStatus :status="a.status" :cancelled="a.cancelled" />
                 </td>
@@ -117,13 +121,13 @@ export default {
       simple: false,
       hideCancelled: false,
       updating: false,
-      firstUpdating: false,
+      mounted: false,
     }
   },
 
   mounted() {
-    this.firstUpdating = true;
     this.updateFlightData();
+    this.mounted = true;
 
     // 3分毎にデータ更新
     setInterval(() => {
@@ -184,8 +188,6 @@ export default {
       return {
         even: (this.hideCancelled ? info.index2 : index) % 2 == 0,
         cancelled: info.cancelled,
-        'est-arr': info.isEstimatedArrivalTime,
-        'est-dep': info.isEstimatedDepartureTime,
         'is-hidden': info.cancelled && this.hideCancelled,
       };
     },
@@ -208,54 +210,55 @@ export default {
   padding-bottom: 1.5rem;
 }
 
-.table-fi th, .table-fi td {
-  color: hsl(0, 0%, 98%);
-  padding: 0.4rem 0.5rem;
-  background-color: hsl(0, 0%, 21%);
-  line-height: 1.1;
-  vertical-align: middle;
-}
+.table-fi {
+  th, td {
+    color: hsl(0, 0%, 98%);
+    padding: 0.4rem 0.5rem;
+    background-color: hsl(0, 0%, 21%);
+    line-height: 1.1;
+    vertical-align: middle;
+  }
 
-.table-fi .even > td {
-  background-color: hsl(0, 0%, 29%);
-}
+  .even > td {
+    background-color: hsl(0, 0%, 29%);
+  }
 
-.table-fi th {
-  background-color: hsl(0, 0%, 14%);
-  text-align: center !important;
-  word-break: keep-all;
+  th {
+    background-color: hsl(0, 0%, 14%);
+    text-align: center !important;
+    word-break: keep-all;
+  }
 }
 
 .table-fi.is-bordered td, .table-fi.is-bordered th {
   border-width: 1px;
   border-style: solid;
-  border-color: hsl(0, 0%, 10%) hsl(0, 0%, 10%) hsl(0, 0%, 10%) hsl(0, 0%, 10%);
+  border-color: hsl(0, 0%, 10%);
 }
 
-.table-head {
-  background-color: hsl(0, 0%, 7%);
+.table-head-line {
   font-weight: bold;
   font-size: 1.5rem;
-  padding: 0 1rem 0.8rem 1rem;
-  border-width: 0 !important;
+  padding: 0 0.5rem 0.2rem 0.5rem;
 }
-.table-arrivals .table-head {
+.table-head-line.table-head-line-arrivals {
   color: hsl(48, 85%, 60%);
 }
-.table-departures .table-head {
+.table-head-line.table-head-line-departures {
   color: hsl(141, 80%, 60%);
 }
 
 .fi-number {
   word-break: keep-all;
   white-space: nowrap;
-}
-.fi-number > .num {
-  font-weight: bold;
-  font-size: 1.2rem;
 
-  @include touch {
-    font-size: 1rem;
+  .num {
+    font-weight: bold;
+    font-size: 1.2rem;
+
+    @include touch {
+      font-size: 1rem;
+    }
   }
 }
 
@@ -270,23 +273,9 @@ export default {
   white-space: nowrap;
 }
 
-.fi-actual-arr-time, .fi-actual-dep-time {
-  color: red;
-}
-
-.est-arr .fi-actual-arr-time, .est-dep .fi-actual-dep-time {
-  color: lime;
-}
-
 .fi-status {
   word-break: keep-all;
   white-space: nowrap;
-}
-
-.fi-text {
-  font-size: 0.7rem;
-  font-weight: normal;
-  color: hsl(0, 0%, 98%);
 }
 
 /* アニメーション */
