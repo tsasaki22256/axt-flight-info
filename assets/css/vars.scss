@@ -13,3 +13,9 @@ $footer-color: $white-bis;
     @content;
   }
 }
+
+@mixin wide {
+  @media screen and (max-width: 1600px) {
+    @content;
+  }
+}

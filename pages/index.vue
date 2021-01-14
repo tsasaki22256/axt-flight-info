@@ -18,19 +18,31 @@
       </div>
     </section>
 
-      <!-- <div v-for="(a, index) in comb" :key="index">
-        {{ a.arr ? a.arr.number: '' }} / {{ a.dep ? a.dep.number : '' }}
-      </div> -->
-
-    <section class="section section-thin">
+    <section class="section section-thin is-size-7-touch is-hidden-mobile">
       <table class="table is-fullwidth is-bordered table-fi">
         <tbody>
+          <tr>
+            <th class="fi-number"><font-awesome-icon icon="plane-arrival" class="table-head-line-arrivals" /> 到着便名</th>
+            <th class="fi-airport">出発地</th>
+            <th class="fi-time is-hidden-touch-custom" colspan="2" v-if="!simple">出発時間</th>
+            <th class="fi-time" colspan="2">到着時間</th>
+            <th class="fi-status">状況</th>
+            <th class="fi-summary is-hidden-wide" v-if="!simple">備考</th>
+
+            <th class="fi-aircraft-type" v-if="!simple"><span class="is-hidden-touch-custom">機体</span></th>
+
+            <th class="fi-number"><font-awesome-icon icon="plane-departure" class="table-head-line-departures" /> 出発便名</th>
+            <th class="fi-airport">行先</th>
+            <th class="fi-time" colspan="2">出発時間</th>
+            <th class="fi-time is-hidden-touch-custom" colspan="2" v-if="!simple">到着時間</th>
+            <th class="fi-status">状況</th>
+            <th class="fi-summary is-hidden-wide" v-if="!simple">備考</th>
+          </tr>
           <tr :class="combinedRowStyle(a, index)" v-for="(a, index) in comb" :key="index">
             <td class="fi-number">
-              <AirlineLogo :airline="a.arr.airline || a.dep.airline" />
-              <span class="num">{{ a.arr.number }}</span>
+              <AirlineLogo :airline="a.arr.airline || a.dep.airline" v-if="a.arr.number" />
+              <span class="num-big">{{ a.arr.number }}</span>
             </td>
-            <td class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">{{ a.arr.aircraftType }}</td>
             <td class="fi-airport">{{ a.arr.origin }}</td>
             <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.arr.scheduledDepartureTime }}</td>
             <td class="fi-time is-hidden-touch-custom" v-if="!simple">
@@ -43,15 +55,16 @@
             <td class="fi-status">
               <FiTableStatus :status="a.arr.status" :cancelled="a.arr.cancelled" />
             </td>
-            <td class="fi-text is-hidden-touch-custom" v-if="!simple">
+            <td class="fi-text is-hidden-wide" v-if="!simple">
               <FiTableInfo :infoSummary="a.arr.infoSummary" :infoText="a.arr.infoText" />
             </td>
 
+            <td class="fi-aircraft-type-center" v-if="!simple"><span class="is-hidden-touch-custom">{{ a.arr.aircraftType || a.dep.aircraftType }}</span></td>
+
             <td class="fi-number">
-              <!-- <AirlineLogo :airline="a.dep.airline || a.arr.airline" /> -->
-              <span class="num">{{ a.dep.number }}</span>
+              <AirlineLogo :airline="a.arr.airline || a.dep.airline" v-if="a.dep.number" />
+              <span class="num-big">{{ a.dep.number }}</span>
             </td>
-            <td class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">{{ a.dep.aircraftType }}</td>
             <td class="fi-airport">{{ a.dep.destination }}</td>
             <td class="fi-time">{{ a.dep.scheduledDepartureTime }}</td>
             <td class="fi-time">
@@ -64,7 +77,7 @@
             <td class="fi-status">
               <FiTableStatus :status="a.dep.status" :cancelled="a.dep.cancelled" />
             </td>
-            <td class="fi-text is-hidden-touch-custom" v-if="!simple">
+            <td class="fi-text is-hidden-wide" v-if="!simple">
               <FiTableInfo :infoSummary="a.dep.infoSummary" :infoText="a.dep.infoText" />
             </td>
           </tr>
@@ -72,7 +85,7 @@
       </table>
     </section>
 
-    <section class="section section-thin">
+    <section class="section section-thin is-hidden-tablet">
       <div class="columns is-widescreen is-size-7-touch">
         <div class="column custom-column">
           <div class="table-head-line table-head-line-arrivals">
@@ -283,7 +296,7 @@ export default {
 .table-fi {
   th, td {
     color: hsl(0, 0%, 98%);
-    padding: 0.4rem 0.5rem;
+    padding: 0.35rem 0.5rem;
     background-color: hsl(0, 0%, 21%);
     line-height: 1.1;
     vertical-align: middle;
@@ -311,11 +324,11 @@ export default {
   font-size: 1.5rem;
   padding: 0 0.5rem 0.2rem 0.5rem;
 }
-.table-head-line.table-head-line-arrivals {
-  color: hsl(48, 85%, 60%);
+.table-head-line-arrivals {
+  color: hsl(48, 85%, 60%) !important;
 }
-.table-head-line.table-head-line-departures {
-  color: hsl(141, 80%, 60%);
+.table-head-line-departures {
+  color: hsl(141, 80%, 60%) !important;
 }
 
 .fi-number {
@@ -328,6 +341,15 @@ export default {
 
     @include touch {
       font-size: 1rem;
+    }
+  }
+
+  .num-big {
+    font-weight: bold;
+    font-size: 1.25rem;
+
+    @include touch {
+      font-size: 1.05rem;
     }
   }
 }
@@ -346,6 +368,15 @@ export default {
 .fi-status {
   word-break: keep-all;
   white-space: nowrap;
+}
+
+.fi-aircraft-type {
+  min-width: 0.2rem;
+}
+
+.fi-aircraft-type-center {
+  background-color: hsl(0, 0%, 16%) !important;
+  min-width: 0.2rem;
 }
 
 /* アニメーション */

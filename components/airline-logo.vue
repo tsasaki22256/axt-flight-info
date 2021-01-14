@@ -16,10 +16,10 @@ export default {
   font-family: verdana, arial, Helvetica, sans-serif;
   display: inline-block;
   padding: 0.1rem 0.3rem;
-  margin-right: 0.2rem;
+  margin-right: 0.1rem;
   min-width: 3.2rem;
   text-align: center;
-  border: solid 1px hsl(0, 0%, 80%);
+  //transform: scaleX(0.9);
 
   @include touch {
     padding: 0.1rem 0.1rem;
@@ -28,12 +28,14 @@ export default {
   }
 }
 .logoana {
-  background-color: rgb(33,61,149);
+  background-color: rgb(41, 69, 163);
   color: white;
+  border: solid 1px hsl(0, 0%, 80%);
 }
 .logojal {
-  background-color: crimson;
-  color: white;
+  background-color: white;
+  color: black;
+  border: solid 1px gray;
 }
 /* purgecss end ignore */
 </style>
