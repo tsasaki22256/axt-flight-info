@@ -29,7 +29,7 @@
             <th class="fi-status">状況</th>
             <th class="fi-summary is-hidden-wide" v-if="!simple">備考</th>
 
-            <th class="fi-aircraft-type" v-if="!simple"><span class="is-hidden-touch-custom">機体</span></th>
+            <th class="fi-aircraft-type"><span class="is-hidden-touch-custom">機体</span></th>
 
             <th class="fi-number"><font-awesome-icon icon="plane-departure" class="table-head-line-departures" /> 出発便名</th>
             <th class="fi-airport">行先</th>
@@ -59,7 +59,7 @@
               <FiTableInfo :infoSummary="a.arr.infoSummary" :infoText="a.arr.infoText" />
             </td>
 
-            <td class="fi-aircraft-type-center" v-if="!simple"><span class="is-hidden-touch-custom">{{ a.arr.aircraftType || a.dep.aircraftType }}</span></td>
+            <td class="fi-aircraft-type-center"><span class="is-hidden-touch-custom">{{ a.arr.aircraftType || a.dep.aircraftType }}</span></td>
 
             <td class="fi-number">
               <AirlineLogo :airline="a.arr.airline || a.dep.airline" v-if="a.dep.number" />

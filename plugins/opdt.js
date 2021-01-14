@@ -84,6 +84,10 @@ function getFlightStatusTitle(status) {
   return status;
 }
 
+function calcTimeDiff(a, b) {
+  return ((new Date('2020/1/1 ' + b + ':00')) - (new Date('2020/1/1 ' + a + ':00'))) / 1000 / 60;
+}
+
 const emptyFlightData = {
   airline: '',
   number: '',
@@ -131,6 +135,60 @@ async function downloadFlightData(axios, consumerkey) {
   };
 }
 
+function combineArrivalsAndDepartures(arr, dep) {
+  // 機番をキーとして検索するための辞書を作成
+  const refArr = {};
+  const refDep = {};
+
+  for (let i = 0; i < arr.length; i++) {
+    refArr[arr[i].number] = arr[i];
+  }
+
+  for (let i = 0; i < dep.length; i++) {
+    refDep[dep[i].number] = dep[i];
+  }
+
+  // 空のオブジェクト
+  const emptyData = emptyFlightData;
+
+  // 連結データ
+  let comb = []; //始発便以外
+  let comb2 = [];  //始発便のみ
+
+  // 到着便・出発便を連結したデータを作成
+  for (let i = 0; i < numberPair.length; i++) {
+    const numa = numberPair[i][0];
+    const numd = numberPair[i][1];
+    const refa = (numa === '') ? Object.assign({}, emptyData) : refArr[numa];
+    const refd = (numd === '') ? Object.assign({}, emptyData) : refDep[numd];
+
+    (numa === '' ? comb2 : comb).push({
+      arr: refa,
+      dep: refd,
+    });
+  }
+
+  // ソート
+  comb.sort((a, b) => a.arr.scheduledArrivalTime > b.arr.scheduledArrivalTime ? 1 : -1);
+  comb2.sort((a, b) => a.dep.scheduledDepartureTime > b.dep.scheduledDepartureTime ? 1 : -1);
+
+  comb = [...comb2, ...comb];
+
+  // 欠航便を無視した行インデックス
+  for (let i = 0, x = 0; i < comb.length; i++) {
+    comb[i].index3 = x;
+    if (!(
+      (comb[i].arr.cancelled && comb[i].dep.cancelled) ||
+      (comb[i].arr.number === '' && comb[i].dep.cancelled) ||
+      (comb[i].arr.cancelled && comb[i].dep.number === '')
+    )) {
+      x++;
+    }
+  }
+
+  return comb;
+}
+
 async function updateFlightData(params) {
   const res = await downloadFlightData(params.axios, params.consumerkey);
 
@@ -156,7 +214,7 @@ async function updateFlightData(params) {
   }
 
   for (let r of res.depOfArr) {
-    const index = arr.findIndex(x => x.number === r['owl:sameAs'].replace(/^.+\.[A-Z]+/, ''));
+    const index = arr.findIndex(x => x.number === getFlightNumber(r['owl:sameAs']));
     if (index !== -1) {
       arr[index].actualDepartureTime = r['odpt:estimatedDepartureTime'] || r['odpt:actualDepartureTime'];
       arr[index].isEstimatedDepartureTime = r['odpt:estimatedDepartureTime'] ? true : false;
@@ -183,7 +241,7 @@ async function updateFlightData(params) {
   }
 
   for (let r of res.depOfDep) {
-    const index = dep.findIndex(x => x.number === r['owl:sameAs'].replace(/^.+\.[A-Z]+/, ''));
+    const index = dep.findIndex(x => x.number === getFlightNumber(r['owl:sameAs']));
     if (index !== -1) {
       dep[index].actualDepartureTime = r['odpt:estimatedDepartureTime'] || r['odpt:actualDepartureTime'];
       dep[index].isEstimatedDepartureTime = r['odpt:estimatedDepartureTime'] ? true : false;
@@ -195,30 +253,28 @@ async function updateFlightData(params) {
     }
   }
 
+  const dataArrDep = [...arr, ...dep];
+
   // 最新の更新日時を取得
   let date = '';
 
-  for (let i = 0; i < arr.length; i++) {
-    if (date < arr[i].date) {
-      date = arr[i].date;
+  for (let i = 0; i < dataArrDep.length; i++) {
+    if (date < dataArrDep[i].date) {
+      date = dataArrDep[i].date;
     }
   }
 
-  for (let i = 0; i < dep.length; i++) {
-    if (date < dep[i].date) {
-      date = dep[i].date;
-    }
+  params.date = new Date(date).toLocaleString();
+
+  const m = params.date.match(/([0-9]+:[0-9]+):[0-9]+/);
+  if (m) {
+    params.time = m[1];
   }
 
   // ステータス
-  for (let i = 0; i < arr.length; i++) {
-    arr[i].status = arr[i].astatus == '到着予定' ? arr[i].dstatus : arr[i].astatus;
-    arr[i].cancelled = arr[i].status == '欠航';
-  }
-
-  for (let i = 0; i < dep.length; i++) {
-    dep[i].status = dep[i].astatus == '到着予定' ? dep[i].dstatus : dep[i].astatus;
-    dep[i].cancelled = dep[i].status == '欠航';
+  for (let i = 0; i < dataArrDep.length; i++) {
+    dataArrDep[i].status = dataArrDep[i].astatus == '到着予定' ? dataArrDep[i].dstatus : dataArrDep[i].astatus;
+    dataArrDep[i].cancelled = dataArrDep[i].status == '欠航';
   }
 
   // 到着便の到着遅れ、出発便の出発遅れを計算
@@ -226,7 +282,7 @@ async function updateFlightData(params) {
     const at = arr[i].actualArrivalTime;
     const st = arr[i].scheduledArrivalTime;
     if (at && st) {
-      arr[i].delayTime = ((new Date('2020/1/1 ' + at + ':00')) - (new Date('2020/1/1 ' + st + ':00'))) / 1000 / 60;
+      arr[i].delayTime = calcTimeDiff(st, at);
     }
   }
 
@@ -234,7 +290,7 @@ async function updateFlightData(params) {
     const at = dep[i].actualDepartureTime;
     const st = dep[i].scheduledDepartureTime;
     if (at && st) {
-      dep[i].delayTime = ((new Date('2020/1/1 ' + at + ':00')) - (new Date('2020/1/1 ' + st + ':00'))) / 1000 / 60;
+      dep[i].delayTime = calcTimeDiff(st, at);
     }
   }
 
@@ -257,80 +313,8 @@ async function updateFlightData(params) {
     }
   }
 
-  // 機番をキーとして検索するための辞書
-  const refArr = {};
-  const refDep = {};
-
-  for (let i = 0; i < arr.length; i++) {
-    refArr[arr[i].number] = arr[i];
-  }
-
-  for (let i = 0; i < dep.length; i++) {
-    refDep[dep[i].number] = dep[i];
-  }
-
-  // 空のオブジェクト
-  const emptyData = emptyFlightData;
-
-  // 到着便・出発便を結合したデータを作成
-  for (let i = 0; i < numberPair.length; i++) {
-    const numa = numberPair[i][0];
-    if (numa === '') continue;
-
-    const numd = numberPair[i][1];
-    const refa = (numa === '') ? Object.assign({}, emptyData) : refArr[numa];
-    const refd = (numd === '') ? Object.assign({}, emptyData) : refDep[numd];
-
-    params.comb.push({
-      arr: refa,
-      dep: refd,
-    });
-  }
-
-  // ソート
-  params.comb.sort((a, b) => a.arr.scheduledArrivalTime > b.arr.scheduledArrivalTime ? 1 : -1);
-
-  // 始発便
-  const comb2 = [];
-  for (let i = 0; i < numberPair.length; i++) {
-    const numa = numberPair[i][0];
-    if (numa !== '') continue;
-
-    const numd = numberPair[i][1];
-    const refa = (numa === '') ? Object.assign({}, emptyData) : refArr[numa];
-    const refd = (numd === '') ? Object.assign({}, emptyData) : refDep[numd];
-
-    comb2.push({
-      arr: refa,
-      dep: refd,
-    });
-  }
-
-  // ソート
-  comb2.sort((a, b) => a.dep.scheduledDepartureTime > b.dep.scheduledDepartureTime ? 1 : -1);
-
-  params.comb = [...comb2, ...params.comb];
-
-  // 欠航便を無視した行インデックス
-  for (let i = 0, x = 0; i < params.comb.length; i++) {
-    params.comb[i].index3 = x;
-    if (!(
-      (params.comb[i].arr.cancelled && params.comb[i].dep.cancelled) ||
-      (params.comb[i].arr.number === '' && params.comb[i].dep.cancelled) ||
-      (params.comb[i].arr.cancelled && params.comb[i].dep.number === '')
-    )) {
-      x++;
-    }
-  }
-
-  // データ取得日時
-  params.date = new Date(date).toLocaleString();
-
-  // 時間
-  const m = params.date.match(/([0-9]+:[0-9]+):[0-9]+/);
-  if (m) {
-    params.time = m[1];
-  }
+  // 到着便と出発便を連結
+  params.comb = combineArrivalsAndDepartures(arr, dep);
 }
 
 export default ({}, inject) => {
