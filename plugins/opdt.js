@@ -122,16 +122,11 @@ async function downloadFlightData(axios, consumerkey) {
   const axArrFromAxt = axios.$get(`${ODPT_URL_FLIGHTINFOARR}?odpt:originAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
   const axDepFromAxt = axios.$get(`${ODPT_URL_FLIGHTINFODEP}?odpt:departureAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
   
-  const res1 = await axArrToAxt;
-  const res2 = await axDepToAxt;
-  const res3 = await axArrFromAxt;
-  const res4 = await axDepFromAxt;
-
   return {
-    arrOfArr: res1,  //到着便の到着情報
-    depOfArr: res2,  //到着便の出発情報
-    arrOfDep: res3,  //出発便の到着情報
-    depOfDep: res4,  //出発便の出発情報
+    arrOfArr: await axArrToAxt,  //到着便の到着情報
+    depOfArr: await axDepToAxt,  //到着便の出発情報
+    arrOfDep: await axArrFromAxt,  //出発便の到着情報
+    depOfDep: await axDepFromAxt,  //出発便の出発情報
   };
 }
 
