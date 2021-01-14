@@ -179,26 +179,43 @@
 export default {
   data() {
     return {
+      // 秋田空港到着便
       arr: [],
+
+      // 秋田空港出発便
       dep: [],
+
+      // 到着便と出発便を連結したデータ
       comb: [],
+
+      // データ更新日時
       date: '',
       time: '',
+
+      // 現在の日付文字列 ("yyyymmdd")
       datestr: '',
+
+      // 更新ボタン有効／無効切替用
       dateFetch: new Date(),
       elapsed: 99999,
+
+      // シンプル／詳細表示切替用
       simple: false,
+
+      // 欠航便表示／非表示切替用
       hideCancelled: false,
+
+      // ローディング関係
       updating: false,
       mounted: false,
     }
   },
 
   mounted() {
-    const d = new Date();
-    this.datestr = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
+    this.datestr = this.getDateString();
 
     this.updateFlightData();
+
     this.mounted = true;
 
     // 3分毎にデータ更新
@@ -255,8 +272,6 @@ export default {
       // データ更新からの経過時間を更新（更新ボタン有効／無効切替用）
       this.dateFetch = new Date();
       this.elapsed = new Date() - this.dateFetch;
-
-      console.log(this.comb);
     },
 
     // 運行情報テーブルの行(<TR>)のスタイル
@@ -267,6 +282,7 @@ export default {
       };
     },
 
+    // 運行情報テーブルの行(<TR>)のスタイル（連結データ用）
     combinedRowStyle(info, index) {
       const cancelled =
         (info.arr.cancelled && info.dep.cancelled) ||
@@ -274,13 +290,14 @@ export default {
         (info.arr.cancelled && info.dep.number === '');
 
       return {
-        even: index % 2 == 0,
+        even: (this.hideCancelled ? info.index3 : index) % 2 == 0,
         'is-hidden': cancelled && this.hideCancelled,
       };
     },
 
-    isTimeChanged(status) {
-      return this.$isTimeChanged(status);
+    getDateString() {
+      const d = new Date();
+      return d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
     }
   }
 }

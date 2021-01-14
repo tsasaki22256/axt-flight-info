@@ -36,6 +36,18 @@ function getAirportName(id) {
   return id;
 }
 
+function getAirlineName(id) {
+  switch (id) {
+    case 'odpt.Operator:ANA': return 'ANA';
+    case 'odpt.Operator:JAL': return 'JAL';
+  }
+  return id;
+}
+
+function getFlightNumber(id) {
+  return id.replace(/^.+\.[A-Z]+/, '');
+}
+
 function getFlightStatusTitle(status) {
   switch (status) {
     case 'odpt.FlightStatus:Adjusting': return '機材繰り';
@@ -72,32 +84,65 @@ function getFlightStatusTitle(status) {
   return status;
 }
 
-async function updateFlightData(params) {
-  const axios = params.axios;
-  const arr = params.arr;
-  const dep = params.dep;
+const emptyFlightData = {
+  airline: '',
+  number: '',
+  aircraftType: '',
+  origin: '',
+  actualArrivalTime: '',
+  isEstimatedArrivalTime: false,
+  scheduledArrivalTime: '',
+  infoSummary: '',
+  infoText: '',
+  astatus: '',
+  date: '',
 
+  actualDepartureTime: '',
+  isEstimatedDepartureTime: false,
+  scheduledDepartureTime: '',
+  dstatus: '',
+
+  destination: '',
+
+  status: '',
+  cancelled: false,
+  delayTime: 0,
+};
+
+async function downloadFlightData(axios, consumerkey) {
   const ODPT_URL_FLIGHTINFOARR = 'https://api.odpt.org/api/v4/odpt:FlightInformationArrival';
   const ODPT_URL_FLIGHTINFODEP = 'https://api.odpt.org/api/v4/odpt:FlightInformationDeparture';
 
-  const axArrToAxt = axios.$get(`${ODPT_URL_FLIGHTINFOARR}?odpt:arrivalAirport=odpt.Airport:AXT&acl:consumerKey=${params.consumerkey}`);
-  const axDepToAxt = axios.$get(`${ODPT_URL_FLIGHTINFODEP}?odpt:destinationAirport=odpt.Airport:AXT&acl:consumerKey=${params.consumerkey}`);
-  const axArrFromAxt = axios.$get(`${ODPT_URL_FLIGHTINFOARR}?odpt:originAirport=odpt.Airport:AXT&acl:consumerKey=${params.consumerkey}`);
-  const axDepFromAxt = axios.$get(`${ODPT_URL_FLIGHTINFODEP}?odpt:departureAirport=odpt.Airport:AXT&acl:consumerKey=${params.consumerkey}`);
+  const axArrToAxt = axios.$get(`${ODPT_URL_FLIGHTINFOARR}?odpt:arrivalAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
+  const axDepToAxt = axios.$get(`${ODPT_URL_FLIGHTINFODEP}?odpt:destinationAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
+  const axArrFromAxt = axios.$get(`${ODPT_URL_FLIGHTINFOARR}?odpt:originAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
+  const axDepFromAxt = axios.$get(`${ODPT_URL_FLIGHTINFODEP}?odpt:departureAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
   
   const res1 = await axArrToAxt;
   const res2 = await axDepToAxt;
   const res3 = await axArrFromAxt;
   const res4 = await axDepFromAxt;
 
-  let date = '';
+  return {
+    arrOfArr: res1,  //到着便の到着情報
+    depOfArr: res2,  //到着便の出発情報
+    arrOfDep: res3,  //出発便の到着情報
+    depOfDep: res4,  //出発便の出発情報
+  };
+}
+
+async function updateFlightData(params) {
+  const res = await downloadFlightData(params.axios, params.consumerkey);
+
+  const arr = params.arr;
+  const dep = params.dep;
 
   // 到着便
 
-  for (let r of res1) {
+  for (let r of res.arrOfArr) {
     arr.push({
-      airline: r['odpt:airline'] == 'odpt.Operator:ANA' ? 'ANA' : 'JAL',
-      number: r['owl:sameAs'].replace(/^.+\.[A-Z]+/, ''),
+      airline: getAirlineName(r['odpt:airline']),
+      number: getFlightNumber(r['owl:sameAs']),
       aircraftType: r['odpt:aircraftType'],
       origin: getAirportName(r['odpt:originAirport']),
       actualArrivalTime: r['odpt:estimatedArrivalTime'] || r['odpt:actualArrivalTime'],
@@ -110,12 +155,12 @@ async function updateFlightData(params) {
     });
   }
 
-  for (let r of res2) {
+  for (let r of res.depOfArr) {
     const index = arr.findIndex(x => x.number === r['owl:sameAs'].replace(/^.+\.[A-Z]+/, ''));
     if (index !== -1) {
       arr[index].actualDepartureTime = r['odpt:estimatedDepartureTime'] || r['odpt:actualDepartureTime'];
-      arr[index].scheduledDepartureTime = r['odpt:scheduledDepartureTime'];
       arr[index].isEstimatedDepartureTime = r['odpt:estimatedDepartureTime'] ? true : false;
+      arr[index].scheduledDepartureTime = r['odpt:scheduledDepartureTime'];
       arr[index].dstatus = getFlightStatusTitle(r['odpt:flightStatus']);
       arr[index].date = arr[index].date < r['dc:date'] ? r['dc:date'] : arr[index].date;
     }
@@ -123,10 +168,10 @@ async function updateFlightData(params) {
 
   // 出発便
 
-  for (let r of res3) {
+  for (let r of res.arrOfDep) {
     dep.push({
-      airline: r['odpt:airline'] == 'odpt.Operator:ANA' ? 'ANA' : 'JAL',
-      number: r['owl:sameAs'].replace(/^.+\.[A-Z]+/, ''),
+      airline: getAirlineName(r['odpt:airline']),
+      number: getFlightNumber(r['owl:sameAs']),
       aircraftType: r['odpt:aircraftType'],
       destination: getAirportName(r['odpt:arrivalAirport']),
       actualArrivalTime: r['odpt:estimatedArrivalTime'] || r['odpt:actualArrivalTime'],
@@ -137,7 +182,7 @@ async function updateFlightData(params) {
     });
   }
 
-  for (let r of res4) {
+  for (let r of res.depOfDep) {
     const index = dep.findIndex(x => x.number === r['owl:sameAs'].replace(/^.+\.[A-Z]+/, ''));
     if (index !== -1) {
       dep[index].actualDepartureTime = r['odpt:estimatedDepartureTime'] || r['odpt:actualDepartureTime'];
@@ -151,6 +196,8 @@ async function updateFlightData(params) {
   }
 
   // 最新の更新日時を取得
+  let date = '';
+
   for (let i = 0; i < arr.length; i++) {
     if (date < arr[i].date) {
       date = arr[i].date;
@@ -223,28 +270,7 @@ async function updateFlightData(params) {
   }
 
   // 空のオブジェクト
-  const emptyData = {
-    airline: '',
-    number: '',
-    aircraftType: '',
-    origin: '',
-    actualArrivalTime: '',
-    isEstimatedArrivalTime: false,
-    scheduledArrivalTime: '',
-    infoSummary: '',
-    infoText: '',
-    astatus: '',
-    actualDepartureTime: '',
-    isEstimatedDepartureTime: false,
-    scheduledDepartureTime: '',
-    infoSummary: '',
-    infoText: '',
-    dstatus: '',
-    date: '',
-    status: '',
-    delayTime: 0,
-    cancelled: false,
-  };
+  const emptyData = emptyFlightData;
 
   // 到着便・出発便を結合したデータを作成
   for (let i = 0; i < numberPair.length; i++) {
@@ -284,6 +310,18 @@ async function updateFlightData(params) {
   comb2.sort((a, b) => a.dep.scheduledDepartureTime > b.dep.scheduledDepartureTime ? 1 : -1);
 
   params.comb = [...comb2, ...params.comb];
+
+  // 欠航便を無視した行インデックス
+  for (let i = 0, x = 0; i < params.comb.length; i++) {
+    params.comb[i].index3 = x;
+    if (!(
+      (params.comb[i].arr.cancelled && params.comb[i].dep.cancelled) ||
+      (params.comb[i].arr.number === '' && params.comb[i].dep.cancelled) ||
+      (params.comb[i].arr.cancelled && params.comb[i].dep.number === '')
+    )) {
+      x++;
+    }
+  }
 
   // データ取得日時
   params.date = new Date(date).toLocaleString();
