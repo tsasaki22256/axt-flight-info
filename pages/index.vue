@@ -41,7 +41,7 @@
           <tr :class="combinedRowStyle(a, index)" v-for="(a, index) in comb" :key="index">
             <td class="fi-number">
               <AirlineLogo :airline="a.arr.airline || a.dep.airline" v-if="a.arr.number" />
-              <span class="num-big">{{ a.arr.number }}</span>
+              <FiTableNumber :number="a.arr.number" :airline="a.arr.airline" :datestr="datestr" />
             </td>
             <td class="fi-airport">{{ a.arr.origin }}</td>
             <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.arr.scheduledDepartureTime }}</td>
@@ -63,7 +63,7 @@
 
             <td class="fi-number">
               <AirlineLogo :airline="a.arr.airline || a.dep.airline" v-if="a.dep.number" />
-              <span class="num-big">{{ a.dep.number }}</span>
+              <FiTableNumber :number="a.dep.number" :airline="a.dep.airline" :datestr="datestr" />
             </td>
             <td class="fi-airport">{{ a.dep.destination }}</td>
             <td class="fi-time">{{ a.dep.scheduledDepartureTime }}</td>
@@ -105,7 +105,7 @@
               <tr :class="rowStyle(a, index)" v-for="(a, index) in arr" :key="'arr-' + index">
                 <td class="fi-number">
                   <AirlineLogo :airline="a.airline" />
-                  <span class="num">{{ a.number }}</span>
+                  <FiTableNumber :number="a.number" :airline="a.airline" :datestr="datestr" />
                 </td>
                 <td class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">{{ a.aircraftType }}</td>
                 <td class="fi-airport">{{ a.origin }}</td>
@@ -146,7 +146,7 @@
               <tr :class="rowStyle(a, index)" v-for="(a, index) in dep" :key="'dep-' + index">
                 <td class="fi-number">
                   <AirlineLogo :airline="a.airline" />
-                  <span class="num">{{ a.number }}</span>
+                  <FiTableNumber :number="a.number" :airline="a.airline" :datestr="datestr" />
                 </td>
                 <td class="fi-aircraft-type is-hidden-touch-custom" v-if="!simple">{{ a.aircraftType }}</td>
                 <td class="fi-airport">{{ a.destination }}</td>
@@ -184,6 +184,7 @@ export default {
       comb: [],
       date: '',
       time: '',
+      datestr: '',
       dateFetch: new Date(),
       elapsed: 99999,
       simple: false,
@@ -194,6 +195,9 @@ export default {
   },
 
   mounted() {
+    const d = new Date();
+    this.datestr = d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
+
     this.updateFlightData();
     this.mounted = true;
 
@@ -296,20 +300,24 @@ export default {
 .table-fi {
   th, td {
     color: hsl(0, 0%, 98%);
-    padding: 0.35rem 0.5rem;
     background-color: hsl(0, 0%, 21%);
     line-height: 1.1;
     vertical-align: middle;
-  }
-
-  .even > td {
-    background-color: hsl(0, 0%, 29%);
   }
 
   th {
     background-color: hsl(0, 0%, 14%);
     text-align: center !important;
     word-break: keep-all;
+    padding: 0.45rem 0.5rem;
+  }
+
+  td {
+    padding: 0.35rem 0.5rem;
+  }
+
+  .even > td {
+    background-color: hsl(0, 0%, 29%);
   }
 }
 
@@ -321,7 +329,7 @@ export default {
 
 .table-head-line {
   font-weight: bold;
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   padding: 0 0.5rem 0.2rem 0.5rem;
 }
 .table-head-line-arrivals {
@@ -334,24 +342,6 @@ export default {
 .fi-number {
   word-break: keep-all;
   white-space: nowrap;
-
-  .num {
-    font-weight: bold;
-    font-size: 1.2rem;
-
-    @include touch {
-      font-size: 1rem;
-    }
-  }
-
-  .num-big {
-    font-weight: bold;
-    font-size: 1.25rem;
-
-    @include touch {
-      font-size: 1.05rem;
-    }
-  }
 }
 
 .fi-airport {
