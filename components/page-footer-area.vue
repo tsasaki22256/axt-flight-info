@@ -26,7 +26,7 @@
   line-height: 1.4rem;
   border-top: solid 1px gray;
 
-  @include touch {
+  @include touch-custom {
     padding-left: 1rem;
     padding-right: 1rem;
   }

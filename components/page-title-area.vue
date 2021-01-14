@@ -25,7 +25,7 @@ export default {
   letter-spacing: 0.1rem;
   transform: scale(0.9, 1);
 
-  @include touch {
+  @include touch-custom {
     letter-spacing: 0.08rem;
     font-size: 1.25rem;
   }

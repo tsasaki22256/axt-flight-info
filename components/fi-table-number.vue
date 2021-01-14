@@ -23,7 +23,7 @@ export default {
   font-weight: bold;
   font-size: 1.2rem;
 
-  @include touch {
+  @include touch-custom {
     font-size: 1rem;
   }
 

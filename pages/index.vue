@@ -18,7 +18,7 @@
       </div>
     </section>
 
-    <section class="section section-thin is-size-7-touch is-hidden-mobile">
+    <section class="section section-thin is-size-7-touch-custom is-hidden-mobile">
       <table class="table is-fullwidth is-bordered table-fi">
         <tbody>
           <tr>

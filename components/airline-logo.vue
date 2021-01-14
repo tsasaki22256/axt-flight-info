@@ -21,7 +21,7 @@ export default {
   min-width: 3.0rem;
   text-align: center;
 
-  @include touch {
+  @include touch-custom {
     padding: 0.1rem 0.1rem;
     margin-right: 0.1rem;
     min-width: 2.8rem;
