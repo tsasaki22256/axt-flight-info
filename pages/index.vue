@@ -22,6 +22,7 @@
       <table class="table is-fullwidth is-bordered table-fi">
         <tbody>
           <tr>
+            <th class="fi-spotstat"></th>
             <th class="fi-number"><font-awesome-icon icon="plane-arrival" class="table-head-line-arrivals" /> 到着便名</th>
             <th class="fi-airport">出発地</th>
             <th class="fi-time is-hidden-touch-custom" colspan="2" v-if="!simple">出発時間</th>
@@ -39,6 +40,9 @@
             <th class="fi-summary is-hidden-wide" v-if="!simple">備考</th>
           </tr>
           <tr :class="combinedRowStyle(a, index)" v-for="(a, index) in comb" :key="index">
+            <td class="fi-spotstat">
+              <FiTableSpotstat :status="a.spotstat" />
+            </td>
             <td class="fi-number">
               <AirlineLogo :airline="a.arr.airline || a.dep.airline" v-if="a.arr.number" />
               <FiTableNumber :number="a.arr.number" :airline="a.arr.airline" :datestr="datestr" />
@@ -354,6 +358,11 @@ export default {
 }
 .table-head-line-departures {
   color: hsl(141, 80%, 60%) !important;
+}
+
+.fi-spotstat {
+  min-width: 1rem;
+  padding: 0 !important;
 }
 
 .fi-number {

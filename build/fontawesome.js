@@ -1,4 +1,5 @@
 const solid = [
+  'faCircle',
   'faPlane',
   'faPlaneArrival',
   'faPlaneDeparture',

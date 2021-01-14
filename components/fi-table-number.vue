@@ -1,6 +1,6 @@
 <template>
   <span class="num">
-    <a :href="anchorLink">{{ number }}</a>
+    <a :href="anchorLink" target="_blank">{{ number }}</a>
   </span>
 </template>
 

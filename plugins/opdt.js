@@ -181,6 +181,33 @@ function combineArrivalsAndDepartures(arr, dep) {
     }
   }
 
+  // 駐機中 or スポットイン／アウト中？
+  for (let i = 0; i < comb.length; i++) {
+    const a = comb[i].arr;
+    const d = comb[i].dep;
+
+    if (a.cancelled || d.cancelled) continue;
+
+    // 到着していて、出発していない
+    if (!a.isEstimatedArrivalTime && d.isEstimatedDepartureTime) {
+      comb[i].spotstat = 'on';
+    }
+
+    // 夜間駐機便が出発していない
+    if (a.number === '' && d.isEstimatedDepartureTime) {
+      comb[i].spotstat = 'on';
+    }
+
+    // 夜間駐機便が到着している
+    if (!a.isEstimatedArrivalTime && d.number === '') {
+      comb[i].spotstat = 'on';
+    }
+
+    if (a.status === '着陸済み' || d.status === '出発済み') {
+      comb[i].spotstat = 'flicker';
+    }
+  }
+
   return comb;
 }
 
