@@ -8,6 +8,12 @@ $footer-background-color: $black-bis;
 $footer-color: $white-bis;
 
 /* モバイル用ブレークポイント */
+@mixin mobile-s {
+  @media screen and (max-width: 320px) {
+    @content;
+  }
+}
+
 @mixin touch-custom {
   @media screen and (max-width: 1216px) { /* 1023 => 1216 */
     @content;

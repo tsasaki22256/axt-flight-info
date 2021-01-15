@@ -306,6 +306,11 @@ export default {
 .custom-column {
   padding-top: 0;
   padding-bottom: 1.5rem;
+
+  @include touch-custom {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
 }
 
 .table-fi {
@@ -325,6 +330,10 @@ export default {
 
   td {
     padding: 0.35rem 0.5rem;
+
+    @include mobile-s {
+      padding: 0.3rem 0.2rem;
+    }
   }
 
   .even > td {
