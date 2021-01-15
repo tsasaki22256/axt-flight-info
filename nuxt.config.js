@@ -29,7 +29,7 @@ export default {
     }
   },
   purgeCSS: {
-    whitelistPatterns: [/svg-/, /fa-/, /.*\[disabled].*/]
+    whitelistPatterns: [/svg-/, /fa-/, /.*\[disabled\].*/]
   },
   modules: [
     '@nuxtjs/bulma',

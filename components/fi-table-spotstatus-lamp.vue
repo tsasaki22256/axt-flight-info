@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  props: ['status'], //status=''|'on'|'flicker'
+  props: ['status'], // '' | 'on' | 'flicker'
 }
 </script>
 

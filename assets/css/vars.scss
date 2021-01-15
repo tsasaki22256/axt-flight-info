@@ -7,7 +7,6 @@ $table-cell-border: solid 1px $grey;
 $footer-background-color: $black-bis;
 $footer-color: $white-bis;
 
-/* モバイル用ブレークポイント */
 @mixin mobile-s {
   @media screen and (max-width: 320px) {
     @content;
