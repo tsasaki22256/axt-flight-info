@@ -22,7 +22,7 @@
       <table class="table is-fullwidth is-bordered table-fi">
         <tbody>
           <tr>
-            <th class="fi-spotstat"></th>
+            <th class="fi-spotstatus"></th>
             <th class="fi-number"><font-awesome-icon icon="plane-arrival" class="table-head-line-arrivals" /> 到着便名</th>
             <th class="fi-airport">出発地</th>
             <th class="fi-time is-hidden-touch-custom" colspan="2" v-if="!simple">出発時間</th>
@@ -39,50 +39,50 @@
             <th class="fi-status">状況</th>
             <th class="fi-summary is-hidden-wide" v-if="!simple">備考</th>
           </tr>
-          <tr :class="combinedRowStyle(a, index)" v-for="(a, index) in comb" :key="index">
-            <td class="fi-spotstat">
-              <FiTableSpotstat :status="a.spotstat" />
+          <tr :class="combinedRowStyle(a, index)" v-for="(a, index) in combined" :key="index">
+            <td class="fi-spotstatus">
+              <FiTableSpotstatusLamp :status="a.spotStatusLamp" />
             </td>
             <td class="fi-number">
-              <AirlineLogo :airline="a.arr.airline || a.dep.airline" v-if="a.arr.number" />
-              <FiTableNumber :number="a.arr.number" :airline="a.arr.airline" :datestr="datestr" />
+              <AirlineLogo :airline="a.arrival.airline || a.departure.airline" v-if="a.arrival.number" />
+              <FiTableNumber :number="a.arrival.number" :airline="a.arrival.airline" :datestr="datestr" />
             </td>
-            <td class="fi-airport">{{ a.arr.origin }}</td>
-            <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.arr.scheduledDepartureTime }}</td>
+            <td class="fi-airport">{{ a.arrival.origin }}</td>
+            <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.arrival.scheduledDepartureTime }}</td>
             <td class="fi-time is-hidden-touch-custom" v-if="!simple">
-              <FiTableColoredtime :time="a.arr.actualDepartureTime" :isActual="!a.arr.isEstimatedDepartureTime" />
+              <FiTableColoredtime :time="a.arrival.actualDepartureTime" :isActual="!a.arrival.isEstimatedDepartureTime" />
             </td>
-            <td class="fi-time">{{ a.arr.scheduledArrivalTime }}</td>
+            <td class="fi-time">{{ a.arrival.scheduledArrivalTime }}</td>
             <td class="fi-time">
-              <FiTableColoredtime :time="a.arr.actualArrivalTime" :delay="a.arr.delayTime" :isActual="!a.arr.isEstimatedArrivalTime" />
+              <FiTableColoredtime :time="a.arrival.actualArrivalTime" :delay="a.arrival.arrivalDelay" :isActual="!a.arrival.isEstimatedArrivalTime" />
             </td>
             <td class="fi-status">
-              <FiTableStatus :status="a.arr.status" :cancelled="a.arr.cancelled" />
+              <FiTableStatus :status="a.arrival.status" :cancelled="a.arrival.cancelled" />
             </td>
             <td class="fi-text is-hidden-wide" v-if="!simple">
-              <FiTableInfo :infoSummary="a.arr.infoSummary" :infoText="a.arr.infoText" />
+              <FiTableInfo :infoSummary="a.arrival.infoSummary" :infoText="a.arrival.infoText" />
             </td>
 
-            <td class="fi-aircraft-type-center"><span class="is-hidden-touch-custom">{{ a.arr.aircraftType || a.dep.aircraftType }}</span></td>
+            <td class="fi-aircraft-type-center"><span class="is-hidden-touch-custom">{{ a.arrival.aircraftType || a.departure.aircraftType }}</span></td>
 
             <td class="fi-number">
-              <AirlineLogo :airline="a.arr.airline || a.dep.airline" v-if="a.dep.number" />
-              <FiTableNumber :number="a.dep.number" :airline="a.dep.airline" :datestr="datestr" />
+              <AirlineLogo :airline="a.arrival.airline || a.departure.airline" v-if="a.departure.number" />
+              <FiTableNumber :number="a.departure.number" :airline="a.departure.airline" :datestr="datestr" />
             </td>
-            <td class="fi-airport">{{ a.dep.destination }}</td>
-            <td class="fi-time">{{ a.dep.scheduledDepartureTime }}</td>
+            <td class="fi-airport">{{ a.departure.destination }}</td>
+            <td class="fi-time">{{ a.departure.scheduledDepartureTime }}</td>
             <td class="fi-time">
-              <FiTableColoredtime :time="a.dep.actualDepartureTime" :delay="a.dep.delayTime" :isActual="!a.dep.isEstimatedDepartureTime" />
+              <FiTableColoredtime :time="a.departure.actualDepartureTime" :delay="a.departure.departureDelay" :isActual="!a.departure.isEstimatedDepartureTime" />
             </td>
-            <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.dep.scheduledArrivalTime }}</td>
+            <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.departure.scheduledArrivalTime }}</td>
             <td class="fi-time is-hidden-touch-custom" v-if="!simple">
-              <FiTableColoredtime :time="a.dep.actualArrivalTime" :isActual="!a.dep.isEstimatedArrivalTime" />
+              <FiTableColoredtime :time="a.departure.actualArrivalTime" :isActual="!a.departure.isEstimatedArrivalTime" />
             </td>
             <td class="fi-status">
-              <FiTableStatus :status="a.dep.status" :cancelled="a.dep.cancelled" />
+              <FiTableStatus :status="a.departure.status" :cancelled="a.departure.cancelled" />
             </td>
             <td class="fi-text is-hidden-wide" v-if="!simple">
-              <FiTableInfo :infoSummary="a.dep.infoSummary" :infoText="a.dep.infoText" />
+              <FiTableInfo :infoSummary="a.departure.infoSummary" :infoText="a.departure.infoText" />
             </td>
           </tr>
         </tbody>
@@ -106,7 +106,7 @@
                 <th class="fi-status">状況</th>
                 <th class="fi-summary is-hidden-touch-custom" v-if="!simple">備考</th>
               </tr>
-              <tr :class="rowStyle(a, index)" v-for="(a, index) in arr" :key="'arr-' + index">
+              <tr :class="rowStyle(a, index)" v-for="(a, index) in arrivals" :key="'arr-' + index">
                 <td class="fi-number">
                   <AirlineLogo :airline="a.airline" />
                   <FiTableNumber :number="a.number" :airline="a.airline" :datestr="datestr" />
@@ -119,7 +119,7 @@
                 </td>
                 <td class="fi-time">{{ a.scheduledArrivalTime }}</td>
                 <td class="fi-time">
-                  <FiTableColoredtime :time="a.actualArrivalTime" :delay="a.delayTime" :isActual="!a.isEstimatedArrivalTime" />
+                  <FiTableColoredtime :time="a.actualArrivalTime" :delay="a.arrivalDelay" :isActual="!a.isEstimatedArrivalTime" />
                 </td>
                 <td class="fi-status">
                   <FiTableStatus :status="a.status" :cancelled="a.cancelled" />
@@ -147,7 +147,7 @@
                 <th class="fi-status">状況</th>
                 <th class="fi-summary is-hidden-touch-custom" v-if="!simple">備考</th>
               </tr>
-              <tr :class="rowStyle(a, index)" v-for="(a, index) in dep" :key="'dep-' + index">
+              <tr :class="rowStyle(a, index)" v-for="(a, index) in departures" :key="'dep-' + index">
                 <td class="fi-number">
                   <AirlineLogo :airline="a.airline" />
                   <FiTableNumber :number="a.number" :airline="a.airline" :datestr="datestr" />
@@ -156,7 +156,7 @@
                 <td class="fi-airport">{{ a.destination }}</td>
                 <td class="fi-time">{{ a.scheduledDepartureTime }}</td>
                 <td class="fi-time">
-                  <FiTableColoredtime :time="a.actualDepartureTime" :delay="a.delayTime" :isActual="!a.isEstimatedDepartureTime" />
+                  <FiTableColoredtime :time="a.actualDepartureTime" :delay="a.departureDelay" :isActual="!a.isEstimatedDepartureTime" />
                 </td>
                 <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.scheduledArrivalTime }}</td>
                 <td class="fi-time is-hidden-touch-custom" v-if="!simple">
@@ -184,13 +184,13 @@ export default {
   data() {
     return {
       // 秋田空港到着便
-      arr: [],
+      arrivals: [],
 
       // 秋田空港出発便
-      dep: [],
+      departures: [],
 
       // 到着便と出発便を連結したデータ
-      comb: [],
+      combined: [],
 
       // データ更新日時
       date: '',
@@ -253,23 +253,13 @@ export default {
 
       this.updating = true;
 
-      const params = {
-        axios: this.$axios,
-        arr: [],
-        dep: [],
-        comb: [],
-        date: '',
-        time: '',
-        consumerkey: this.$config.ODPT_CONSUMERKEY,
-      };
+      const flightData = await this.$fetchFlightData(this.$axios, this.$config.ODPT_CONSUMERKEY);
 
-      await this.$updateFlightData(params);
-
-      this.arr = params.arr;
-      this.dep = params.dep;
-      this.comb = params.comb;
-      this.date = params.date;
-      this.time = params.time;
+      this.arrivals = flightData.arrivals;
+      this.departures = flightData.departures;
+      this.combined = flightData.combined;
+      this.date = flightData.date;
+      this.time = flightData.time;
 
       this.updating = false;
 
@@ -279,22 +269,22 @@ export default {
     },
 
     // 運行情報テーブルの行(<TR>)のスタイル
-    rowStyle(info, index) {
+    rowStyle(data, index) {
       return {
-        even: (this.hideCancelled ? info.index2 : index) % 2 == 0,
-        'is-hidden': info.cancelled && this.hideCancelled,
+        even: (this.hideCancelled ? data.index2 : index) % 2 == 0,
+        'is-hidden': data.cancelled && this.hideCancelled,
       };
     },
 
     // 運行情報テーブルの行(<TR>)のスタイル（連結データ用）
-    combinedRowStyle(info, index) {
+    combinedRowStyle(data, index) {
       const cancelled =
-        (info.arr.cancelled && info.dep.cancelled) ||
-        (info.arr.number === '' && info.dep.cancelled) ||
-        (info.arr.cancelled && info.dep.number === '');
+        (data.arrival.cancelled && data.departure.cancelled) ||
+        (data.arrival.number === '' && data.departure.cancelled) ||
+        (data.arrival.cancelled && data.departure.number === '');
 
       return {
-        even: (this.hideCancelled ? info.index3 : index) % 2 == 0,
+        even: (this.hideCancelled ? data.index3 : index) % 2 == 0,
         'is-hidden': cancelled && this.hideCancelled,
       };
     },
@@ -327,7 +317,7 @@ export default {
   }
 
   th {
-    background-color: hsl(0, 0%, 14%);
+    background-color: hsl(0, 0%, 16%);
     text-align: center !important;
     word-break: keep-all;
     padding: 0.45rem 0.5rem;
@@ -348,6 +338,10 @@ export default {
   border-color: hsl(0, 0%, 10%);
 }
 
+.table-fi.is-bordered th {
+  border-bottom-width: 2px;
+}
+
 .table-head-line {
   font-weight: bold;
   font-size: 1.3rem;
@@ -360,7 +354,7 @@ export default {
   color: hsl(141, 80%, 60%) !important;
 }
 
-.fi-spotstat {
+.fi-spotstatus {
   min-width: 1rem;
   padding: 0 !important;
 }
@@ -393,22 +387,12 @@ export default {
 .fi-aircraft-type-center {
   background-color: hsl(0, 0%, 16%) !important;
   min-width: 0.2rem;
+  text-align: center;
 }
 
-/* アニメーション */
-
-@keyframes icon-flicker {
-  0% {
-    opacity: 0.05;
-  }
-
-  100% {
-    opacity: 1.0;
-  }
-}
-
-.icon-flicker {
-  animation: 0.75s ease-out 0s infinite alternate icon-flicker;
+.fi-text {
+  min-width: 10rem;
+  max-width: 20rem;
 }
 /* purgecss end ignore */
 </style>
