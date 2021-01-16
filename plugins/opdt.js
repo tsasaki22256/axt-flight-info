@@ -60,17 +60,6 @@ async function fetchFlightData(axios, consumerkey) {
   flightData.arrivals.sort((a, b) => a.scheduledArrivalTime > b.scheduledArrivalTime ? 1 : -1);
   flightData.departures.sort((a, b) => a.scheduledDepartureTime > b.scheduledDepartureTime ? 1 : -1);
 
-  // 欠航便を無視した行インデックス
-  for (let i = 0, x = 0; i < flightData.arrivals.length; i++) {
-    if (flightData.arrivals[i].cancelled) continue;
-    flightData.arrivals[i].index2 = x++;
-  }
-
-  for (let i = 0, x = 0; i < flightData.departures.length; i++) {
-    if (flightData.departures[i].cancelled) continue;
-    flightData.departures[i].index2 = x++;
-  }
-
   // 到着便と出発便を連結
   flightData.combined = combineArrivalsAndDepartures(flightData.arrivals, flightData.departures);
 
@@ -240,19 +229,6 @@ function combineArrivalsAndDepartures(arrivals, departures) {
   combinedNoArrival.sort((a, b) => a.departure.scheduledDepartureTime > b.departure.scheduledDepartureTime ? 1 : -1);
 
   combined = [...combinedNoArrival, ...combined];
-
-  // 欠航便を無視した行インデックス
-  for (let i = 0, x = 0; i < combined.length; i++) {
-    if (
-      (combined[i].arrival.cancelled && combined[i].departure.cancelled) ||
-      (combined[i].arrival.number === '' && combined[i].departure.cancelled) ||
-      (combined[i].arrival.cancelled && combined[i].departure.number === '')
-    ) {
-      continue;
-    }
-
-    combined[i].index3 = x++;
-  }
 
   // 駐機中 or スポットイン／アウト中？
   for (let i = 0; i < combined.length; i++) {

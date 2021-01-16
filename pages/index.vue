@@ -39,7 +39,7 @@
             <th class="fi-status">状況</th>
             <th class="fi-summary is-hidden-wide" v-if="!simple">備考</th>
           </tr>
-          <tr :class="combinedRowStyle(a, index)" v-for="(a, index) in combined" :key="index">
+          <tr :class="combinedRowStyle(a, index)" v-for="(a, index) in filteredCombined" :key="index">
             <td class="fi-spotstatus">
               <FiTableSpotstatusLamp :status="a.spotStatusLamp" />
             </td>
@@ -106,7 +106,7 @@
                 <th class="fi-status">状況</th>
                 <th class="fi-summary is-hidden-touch-custom" v-if="!simple">備考</th>
               </tr>
-              <tr :class="rowStyle(a, index)" v-for="(a, index) in arrivals" :key="'arr-' + index">
+              <tr :class="rowStyle(a, index)" v-for="(a, index) in filteredArrivals" :key="'arr-' + index">
                 <td class="fi-number">
                   <AirlineLogo :airline="a.airline" />
                   <FiTableNumber :number="a.number" :airline="a.airline" :datestr="datestr" />
@@ -147,7 +147,7 @@
                 <th class="fi-status">状況</th>
                 <th class="fi-summary is-hidden-touch-custom" v-if="!simple">備考</th>
               </tr>
-              <tr :class="rowStyle(a, index)" v-for="(a, index) in departures" :key="'dep-' + index">
+              <tr :class="rowStyle(a, index)" v-for="(a, index) in filteredDepartures" :key="'dep-' + index">
                 <td class="fi-number">
                   <AirlineLogo :airline="a.airline" />
                   <FiTableNumber :number="a.number" :airline="a.airline" :datestr="datestr" />
@@ -242,6 +242,32 @@ export default {
 
     elapsedSec() {
       return Math.floor((this.elapsed) / 1000);
+    },
+
+    filteredArrivals() {
+      return this.arrivals.filter(data => {
+        if (!this.hideCancelled) return true;
+        return !data.cancelled;
+      });
+    },
+
+    filteredDepartures() {
+      return this.departures.filter(data => {
+        if (!this.hideCancelled) return true;
+        return !data.cancelled;
+      });
+    },
+
+    filteredCombined() {
+      return this.combined.filter(data => {
+        if (!this.hideCancelled) return true;
+
+        const cancelled =
+          (data.arrival.cancelled && data.departure.cancelled) ||
+          (data.arrival.number === '' && data.departure.cancelled) ||
+          (data.arrival.cancelled && data.departure.number === '');
+        return !cancelled;
+      });
     }
   },
 
@@ -271,8 +297,7 @@ export default {
     // 運行情報テーブルの行(<TR>)のスタイル
     rowStyle(data, index) {
       return {
-        even: (this.hideCancelled ? data.index2 : index) % 2 == 0,
-        'is-hidden': data.cancelled && this.hideCancelled,
+        even: index % 2 == 0,
       };
     },
 
@@ -284,8 +309,7 @@ export default {
         (data.arrival.cancelled && data.departure.number === '');
 
       return {
-        even: (this.hideCancelled ? data.index3 : index) % 2 == 0,
-        'is-hidden': cancelled && this.hideCancelled,
+        even: index % 2 == 0,
       };
     },
 
