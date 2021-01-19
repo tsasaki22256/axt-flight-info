@@ -234,19 +234,15 @@ function combineArrivalsAndDepartures(arrivals, departures) {
   for (let i = 0; i < combined.length; i++) {
     const spotStatus = checkSpotStatus(combined[i]);
 
-    let spotStatusLamp = spotStatus;
-
-    if (spotStatus === 'inout') {
-      spotStatusLamp = 'flicker';
-    }
-
-    combined[i].spotStatusLamp = spotStatusLamp;
+    combined[i].spotStatus = spotStatus;
+    combined[i].arrival.spotStatus = (spotStatus === 'in') ? spotStatus : '';
+    combined[i].departure.spotStatus = (spotStatus === 'out') ? spotStatus : '';
   }
 
   return combined;
 }
 
-// 航空機がスポットに滞在中 ("on") か、スポットイン／アウト中か ("inout")、不在か("")
+// 航空機がスポットに滞在中 ("on") か、スポットイン／アウト中か ("in" | "out")、不在か("")
 // combined: 到着便・発着便の連結済みデータ
 function checkSpotStatus(combined) {
   const a = combined.arrival;
@@ -269,8 +265,12 @@ function checkSpotStatus(combined) {
     return 'on';
   }
 
-  if (a.status === '着陸済み' || d.status === '出発済み') {
-    return 'inout';
+  if (a.status === '着陸済み') {
+    return 'in';
+  }
+
+  if (d.status === '出発済み') {
+    return 'out';
   }
 
   return '';

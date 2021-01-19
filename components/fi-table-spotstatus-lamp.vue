@@ -1,12 +1,12 @@
 <template>
-  <div class="spotstat" :class="{ flicker: status === 'flicker' }">
-    <font-awesome-icon icon="circle" v-if="status === 'on' || status === 'flicker'"/>
+  <div class="spotstat" :class="{ flicker: status === 'in' || status === 'out' }">
+    <font-awesome-icon icon="circle" v-if="status !== ''" />
   </div>
 </template>
 
 <script>
 export default {
-  props: ['status'], // '' | 'on' | 'flicker'
+  props: ['status'], // '' | 'on' | 'in' | 'out'
 }
 </script>
 

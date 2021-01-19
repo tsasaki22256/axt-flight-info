@@ -41,11 +41,11 @@
           </tr>
           <tr :class="combinedRowStyle(a, index)" v-for="(a, index) in filteredCombined" :key="index">
             <td class="fi-spotstatus">
-              <FiTableSpotstatusLamp :status="a.spotStatusLamp" />
+              <FiTableSpotstatusLamp :status="a.spotStatus" />
             </td>
             <td class="fi-number">
               <AirlineLogo :airline="a.arrival.airline || a.departure.airline" v-if="a.arrival.number" />
-              <FiTableNumber :number="a.arrival.number" :airline="a.arrival.airline" :datestr="datestr" />
+              <FiTableNumber :number="a.arrival.number" :airline="a.arrival.airline" :datestr="datestr" :spotStatus="a.arrival.spotStatus" />
             </td>
             <td class="fi-airport">{{ a.arrival.origin }}</td>
             <td class="fi-time is-hidden-touch-custom" v-if="!simple">{{ a.arrival.scheduledDepartureTime }}</td>
@@ -67,7 +67,7 @@
 
             <td class="fi-number">
               <AirlineLogo :airline="a.arrival.airline || a.departure.airline" v-if="a.departure.number" />
-              <FiTableNumber :number="a.departure.number" :airline="a.departure.airline" :datestr="datestr" />
+              <FiTableNumber :number="a.departure.number" :airline="a.departure.airline" :datestr="datestr" :spotStatus="a.departure.spotStatus" />
             </td>
             <td class="fi-airport">{{ a.departure.destination }}</td>
             <td class="fi-time">{{ a.departure.scheduledDepartureTime }}</td>

@@ -1,4 +1,6 @@
 const solid = [
+  'faAngleDoubleDown',
+  'faAngleDoubleUp',
   'faCircle',
   'faPlane',
   'faPlaneArrival',
