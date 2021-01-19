@@ -1,8 +1,5 @@
 <template>
   <span :class="{ cancelled: cancelled }">
-    <span v-if="cancelled">
-      <font-awesome-icon icon="times" size="lg"/>
-    </span>
     {{ status }}
   </span>
 </template>
