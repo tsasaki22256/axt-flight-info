@@ -158,7 +158,7 @@ function getLatestUpdateDate(arrivals, departures) {
 
   for (let data of flatFlightData) {
     if (data.date > date) {
-      date = new Date(data.date).toLocaleString();;
+      date = new Date(data.date).toLocaleString();
     }
   }
 
