@@ -7,13 +7,23 @@
         本ページの表示内容について、公共交通事業者への直接の問合せは行わないでください．
       </p>
       <div>
-        <a class="footer-icon-link" href="https://github.com/tsasaki22256/axt-flight-info"><font-awesome-icon class="footer-icon" :icon="['fab', 'github']" size="2x"/></a>
+        <a class="footer-icon-link" href="https://github.com/tsasaki22256/axt-flight-info"><font-awesome-icon class="footer-icon" :icon="['fab', 'github']" size="lg"/></a>
+        axt-flight-info &nbsp;{{ver.version}} &nbsp;{{ver.releaseDate}}
       </div>
     </div>
   </footer>
 </template>
 
 <script>
+import { versionInfo } from '~/assets/js/version.js';
+
+export default {
+  data() {
+    return {
+      ver: versionInfo
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -95,3 +95,5 @@ sw.*
 # public
 public/
 dist/
+
+assets/js/version.js
