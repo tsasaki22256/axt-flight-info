@@ -2,9 +2,9 @@
   <footer class="footer custom-footer">
     <div class="content">
       <p>
-        本サイトの航空機発着情報は、<a href="https://www.odpt.org/">公共交通オープンデータセンター</a>により提供されるデータを取得・加工し表示しているものです．<br>
+        本ページの航空機発着情報は、<a href="https://www.odpt.org/">公共交通オープンデータセンター</a>により提供されるデータを取得・加工し表示しているものです．<br>
         公共交通事業者により提供されたデータを元にしていますが、必ずしも正確・完全なものとは限りません．<br>
-        本サイトの表示内容について、公共交通事業者への直接の問合せは行わないでください．
+        本ページの表示内容について、公共交通事業者への直接の問合せは行わないでください．
       </p>
       <div>
         <a class="footer-icon-link" href="https://github.com/tsasaki22256/axt-flight-info"><font-awesome-icon class="footer-icon" :icon="['fab', 'github']" size="2x"/></a>
