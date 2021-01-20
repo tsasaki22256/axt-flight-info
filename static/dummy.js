@@ -1,0 +1,3 @@
+function dummyFunc() {
+  return 'a';
+}

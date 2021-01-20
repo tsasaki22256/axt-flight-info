@@ -8,6 +8,7 @@
     "start": "nuxt start"
   },
   "dependencies": {
+    "@nuxt/http": "^0.6.2",
     "@nuxtjs/axios": "^5.12.4",
     "nuxt": "^2.14.12"
   },

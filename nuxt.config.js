@@ -3,13 +3,18 @@ import * as FontAwesome from './build/fontawesome'
 export default {
   components: true,
   ssr: true,
-	target: 'static',
+  target: 'static',
+  modern: 'client',
   head: {
     title: 'AxtFlightInfo - 秋田空港運行情報',
     meta: [
       { charset: 'utf-8' },
+      { 'http-equiv': 'x-ua-compatible', content: 'ie=edge' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' }
     ],
+    script: [
+      { src: 'https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.2.5/polyfill.min.js' }
+    ]
   },
   loading: { color: '#fff' },
   css: ['~/assets/css/main.scss'],
@@ -33,7 +38,7 @@ export default {
   },
   modules: [
     '@nuxtjs/bulma',
-    "@nuxtjs/axios"
+    '@nuxt/http'
   ],
   styleResources: {
     scss: ['~assets/css/vars.scss']

@@ -8,8 +8,8 @@ import {
   extractTimeFromDateString,
 } from './opdt-util';
 
-async function fetchFlightData(axios, consumerkey) {
-  const flightDataJson = await downloadFlightDataJson(axios, consumerkey);
+async function fetchFlightData(http, consumerkey) {
+  const flightDataJson = await downloadFlightDataJson(http, consumerkey);
 
   const flightData = {
     arrivals: [],
@@ -66,16 +66,16 @@ async function fetchFlightData(axios, consumerkey) {
   return flightData;
 }
 
-async function downloadFlightDataJson(axios, consumerkey) {
+async function downloadFlightDataJson(http, consumerkey) {
   const ODPT_URL_FLIGHTINFOARR = 'https://api.odpt.org/api/v4/odpt:FlightInformationArrival';
   const ODPT_URL_FLIGHTINFODEP = 'https://api.odpt.org/api/v4/odpt:FlightInformationDeparture';
 
-  const axArrivalInfoOfArrivals = axios.$get(`${ODPT_URL_FLIGHTINFOARR}?odpt:arrivalAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
-  const axDepartureInfoOfArrivals = axios.$get(`${ODPT_URL_FLIGHTINFODEP}?odpt:destinationAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
-  const axArrivalInfoOfDepartures = axios.$get(`${ODPT_URL_FLIGHTINFOARR}?odpt:originAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
-  const axDepartureInfoOfDepartures = axios.$get(`${ODPT_URL_FLIGHTINFODEP}?odpt:departureAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
+  const axArrivalInfoOfArrivals = http.$get(`${ODPT_URL_FLIGHTINFOARR}?odpt:arrivalAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
+  const axDepartureInfoOfArrivals = http.$get(`${ODPT_URL_FLIGHTINFODEP}?odpt:destinationAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
+  const axArrivalInfoOfDepartures = http.$get(`${ODPT_URL_FLIGHTINFOARR}?odpt:originAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
+  const axDepartureInfoOfDepartures = http.$get(`${ODPT_URL_FLIGHTINFODEP}?odpt:departureAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
 
-  return {
+  const ret = {
     arrivals: {
       arrivalInfo: await axArrivalInfoOfArrivals,
       departureInfo: await axDepartureInfoOfArrivals
@@ -85,6 +85,8 @@ async function downloadFlightDataJson(axios, consumerkey) {
       departureInfo: await axDepartureInfoOfDepartures
     }
   };
+
+  return ret;
 }
 
 function parseFlightDataJson(departureInfo, arrivalInfo) {

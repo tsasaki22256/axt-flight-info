@@ -1,5 +1,7 @@
 <template>
   <div v-show="mounted">
+    <script :src="'/dummy.js?date=' + datetimestr"></script>
+
     <PageTitleArea :updateTime="time" />
 
     <section class="section section-thin">
@@ -199,6 +201,8 @@ export default {
       // 現在の日付文字列 ("yyyymmdd")
       datestr: '',
 
+      datetimestr: '',
+
       // 更新ボタン有効／無効切替用
       dateFetch: new Date(),
       elapsed: 99999,
@@ -217,6 +221,7 @@ export default {
 
   mounted() {
     this.datestr = this.getDateString();
+    this.datetimestr = this.getDateTimeString();
 
     this.updateFlightData();
 
@@ -279,7 +284,7 @@ export default {
 
       this.updating = true;
 
-      const flightData = await this.$fetchFlightData(this.$axios, this.$config.ODPT_CONSUMERKEY);
+      const flightData = await this.$fetchFlightData(this.$http, this.$config.ODPT_CONSUMERKEY);
 
       this.arrivals = flightData.arrivals;
       this.departures = flightData.departures;
@@ -316,7 +321,13 @@ export default {
     getDateString() {
       const d = new Date();
       return d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2);
-    }
+    },
+
+    getDateTimeString() {
+      const d = new Date();
+      return d.getFullYear() + ('0' + (d.getMonth() + 1)).slice(-2) + ('0' + d.getDate()).slice(-2) +
+        ('0' + d.getHours()).slice(-2) + ('0' + d.getMinutes()).slice(-2) + ('0' + d.getSeconds()).slice(-2);
+    },
   }
 }
 </script>
