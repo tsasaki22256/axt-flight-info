@@ -2,5 +2,4 @@
 
 mkdir assets/js
 ver=`git tag | sort -V | tail -1`
-d=`date +%Y%m%d`
-echo "export const versionInfo = { version: '$ver', releaseDate: '$d', };" > assets/js/version.js
+echo "export const versionInfo = { version: '$ver', };" > assets/js/version.js

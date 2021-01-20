@@ -8,7 +8,7 @@
       </p>
       <div>
         <a class="footer-icon-link" href="https://github.com/tsasaki22256/axt-flight-info"><font-awesome-icon class="footer-icon" :icon="['fab', 'github']" size="lg"/></a>
-        axt-flight-info &nbsp;{{ver.version}} &nbsp;{{ver.releaseDate}}
+        axt-flight-info &nbsp;{{ver.version}}
       </div>
     </div>
   </footer>
