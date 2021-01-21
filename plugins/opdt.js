@@ -8,8 +8,8 @@ import {
   extractTimeFromDateString,
 } from './opdt-util';
 
-async function fetchFlightData(http, consumerkey) {
-  const flightDataJson = await downloadFlightDataJson(http, consumerkey);
+async function fetchFlightData(http, consumerkey, jsonData) {
+  const flightDataJson = jsonData || await downloadFlightDataJson(http, consumerkey);
 
   const flightData = {
     arrivals: [],
