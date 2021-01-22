@@ -31,7 +31,7 @@ async function downloadFlightDataJson(http, consumerkey) {
   return ret;
 }
 
-function parseFlightDataJson(flightDataJson) {
+export function parseFlightDataJson(flightDataJson) {
   const flightData = {
     arrivals: [],
     departures: [],
@@ -87,7 +87,7 @@ function parseFlightDataJson(flightDataJson) {
   return flightData;
 }
 
-function parseFlightDataJsonElement(departureInfo, arrivalInfo) {
+export function parseFlightDataJsonElement(departureInfo, arrivalInfo) {
   const parsed = {
     airline: toAirlineName(arrivalInfo['odpt:airline']),
     number: toShortFlightNumber(arrivalInfo['owl:sameAs']),
@@ -151,7 +151,7 @@ function parseFlightDataJsonElement(departureInfo, arrivalInfo) {
   return parsed;
 }
 
-function getLatestUpdateDate(arrivals, departures) {
+export function getLatestUpdateDate(arrivals, departures) {
   const flatFlightData = [...arrivals, ...departures];
 
   let date = '';
@@ -165,7 +165,7 @@ function getLatestUpdateDate(arrivals, departures) {
   return date;
 }
 
-function combineArrivalsAndDepartures(arrivals, departures) {
+export function combineArrivalsAndDepartures(arrivals, departures) {
   // 機番をキーとして検索するための辞書を作成
   const makeDictionary = data => {
     const dic = [];
@@ -244,7 +244,7 @@ function combineArrivalsAndDepartures(arrivals, departures) {
 
 // 航空機がスポットに滞在中 ("on") か、スポットイン／アウト中か ("in" | "out")、不在か("")
 // combined: 到着便・発着便の連結済みデータ
-function checkSpotStatus(combined) {
+export function checkSpotStatus(combined) {
   const a = combined.arrival;
   const d = combined.departure;
 
