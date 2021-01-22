@@ -15,6 +15,6 @@ describe('PageTitleArea', () => {
       propsData: props
     });
     const h1 = wrapper.find('.title');
-    expect(h1.text()).toBeTruthy();
+    expect(h1.text()).toMatch(props.updateTime);
   });
 });
