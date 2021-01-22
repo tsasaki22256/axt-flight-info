@@ -1,3 +1,0 @@
-function dummyFunc() {
-  return 'a';
-}

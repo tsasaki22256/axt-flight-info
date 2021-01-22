@@ -1,6 +1,6 @@
 <template>
   <div v-show="mounted">
-    <script :src="'/dummy.js?date=' + datetimestr"></script>
+    <img :src="'/dummy.png?date=' + datetimestr" />
 
     <PageTitleArea :updateTime="time" />
 
