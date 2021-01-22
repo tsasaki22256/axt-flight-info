@@ -305,7 +305,7 @@ export default {
     },
 
     isDebugMode() {
-      return this.$route.query.debug == 1;
+      return this.mounted && this.$route.query.debug == 1;
     },
 
     flightDataJsonForDebug() {
