@@ -8,64 +8,6 @@ import {
   extractTimeFromDateString,
 } from './opdt-util';
 
-async function fetchFlightData(http, consumerkey, jsonData) {
-  const flightDataJson = jsonData || await downloadFlightDataJson(http, consumerkey);
-
-  const flightData = {
-    arrivals: [],
-    departures: [],
-    combined: [],
-    date: '',
-    time: '',
-  };
-
-  // 到着便
-  for (let arrInfo of flightDataJson.arrivals.arrivalInfo) {
-    const depIndex = flightDataJson.arrivals.departureInfo
-      .findIndex(x => toShortFlightNumber(arrInfo['owl:sameAs']) === toShortFlightNumber(x['owl:sameAs']));
-
-    if (depIndex !== -1) {
-      const depInfo = flightDataJson.arrivals.departureInfo[depIndex];
-      flightData.arrivals.push(parseFlightDataJson(depInfo, arrInfo));
-    }
-  }
-
-  // 出発便
-  for (let arrInfo of flightDataJson.departures.arrivalInfo) {
-    const depIndex = flightDataJson.departures.departureInfo
-      .findIndex(x => toShortFlightNumber(arrInfo['owl:sameAs']) === toShortFlightNumber(x['owl:sameAs']));
-
-    if (depIndex !== -1) {
-      const depInfo = flightDataJson.departures.departureInfo[depIndex];
-      flightData.departures.push(parseFlightDataJson(depInfo, arrInfo));
-    }
-  }
-
-  // 最新の更新日時を取得
-  flightData.date = getLatestUpdateDate(flightData.arrivals, flightData.departures);
-  flightData.time = extractTimeFromDateString(flightData.date);
-  
-  // infoSummary, infoText
-  for (let i = 0; i < flightData.arrivals.length; i++) {
-    flightData.arrivals[i].infoSummary = flightData.arrivals[i].arrivalInfoSummary;
-    flightData.arrivals[i].infoText = flightData.arrivals[i].arrivalInfoText;
-  }
-
-  for (let i = 0; i < flightData.departures.length; i++) {
-    flightData.departures[i].infoSummary = flightData.departures[i].departureInfoSummary;
-    flightData.departures[i].infoText = flightData.departures[i].departureInfoText;
-  }
-
-  // 時間でソート
-  flightData.arrivals.sort((a, b) => a.scheduledArrivalTime > b.scheduledArrivalTime ? 1 : -1);
-  flightData.departures.sort((a, b) => a.scheduledDepartureTime > b.scheduledDepartureTime ? 1 : -1);
-
-  // 到着便と出発便を連結
-  flightData.combined = combineArrivalsAndDepartures(flightData.arrivals, flightData.departures);
-
-  return flightData;
-}
-
 async function downloadFlightDataJson(http, consumerkey) {
   const ODPT_URL_FLIGHTINFOARR = 'https://api.odpt.org/api/v4/odpt:FlightInformationArrival';
   const ODPT_URL_FLIGHTINFODEP = 'https://api.odpt.org/api/v4/odpt:FlightInformationDeparture';
@@ -89,7 +31,63 @@ async function downloadFlightDataJson(http, consumerkey) {
   return ret;
 }
 
-function parseFlightDataJson(departureInfo, arrivalInfo) {
+function parseFlightDataJson(flightDataJson) {
+  const flightData = {
+    arrivals: [],
+    departures: [],
+    combined: [],
+    date: '',
+    time: '',
+  };
+
+  // 到着便
+  for (let arrInfo of flightDataJson.arrivals.arrivalInfo) {
+    const depIndex = flightDataJson.arrivals.departureInfo
+      .findIndex(x => toShortFlightNumber(arrInfo['owl:sameAs']) === toShortFlightNumber(x['owl:sameAs']));
+
+    if (depIndex !== -1) {
+      const depInfo = flightDataJson.arrivals.departureInfo[depIndex];
+      flightData.arrivals.push(parseFlightDataJsonElement(depInfo, arrInfo));
+    }
+  }
+
+  // 出発便
+  for (let arrInfo of flightDataJson.departures.arrivalInfo) {
+    const depIndex = flightDataJson.departures.departureInfo
+      .findIndex(x => toShortFlightNumber(arrInfo['owl:sameAs']) === toShortFlightNumber(x['owl:sameAs']));
+
+    if (depIndex !== -1) {
+      const depInfo = flightDataJson.departures.departureInfo[depIndex];
+      flightData.departures.push(parseFlightDataJsonElement(depInfo, arrInfo));
+    }
+  }
+
+  // 最新の更新日時を取得
+  flightData.date = getLatestUpdateDate(flightData.arrivals, flightData.departures);
+  flightData.time = extractTimeFromDateString(flightData.date);
+
+  // infoSummary, infoText
+  for (let i = 0; i < flightData.arrivals.length; i++) {
+    flightData.arrivals[i].infoSummary = flightData.arrivals[i].arrivalInfoSummary;
+    flightData.arrivals[i].infoText = flightData.arrivals[i].arrivalInfoText;
+  }
+
+  for (let i = 0; i < flightData.departures.length; i++) {
+    flightData.departures[i].infoSummary = flightData.departures[i].departureInfoSummary;
+    flightData.departures[i].infoText = flightData.departures[i].departureInfoText;
+  }
+
+  // 時間でソート
+  flightData.arrivals.sort((a, b) => a.scheduledArrivalTime > b.scheduledArrivalTime ? 1 : -1);
+  flightData.departures.sort((a, b) => a.scheduledDepartureTime > b.scheduledDepartureTime ? 1 : -1);
+
+  // 到着便と出発便を連結
+  flightData.combined = combineArrivalsAndDepartures(flightData.arrivals, flightData.departures);
+
+  return flightData;
+}
+
+function parseFlightDataJsonElement(departureInfo, arrivalInfo) {
   const parsed = {
     airline: toAirlineName(arrivalInfo['odpt:airline']),
     number: toShortFlightNumber(arrivalInfo['owl:sameAs']),
@@ -213,7 +211,7 @@ function combineArrivalsAndDepartures(arrivals, departures) {
     ['1655', ''],
     ['409', ''],
   ];
-  
+
   for (let i = 0; i < NUMBER_PAIR.length; i++) {
     const numArr = NUMBER_PAIR[i][0];
     const numDep = NUMBER_PAIR[i][1];
@@ -279,5 +277,6 @@ function checkSpotStatus(combined) {
 }
 
 export default ({}, inject) => {
-  inject('fetchFlightData', fetchFlightData);
+  inject('downloadFlightDataJson', downloadFlightDataJson);
+  inject('parseFlightDataJson', parseFlightDataJson);
 }

@@ -333,7 +333,8 @@ export default {
 
       this.updating = true;
 
-      const flightData = await this.$fetchFlightData(this.$http, this.$config.ODPT_CONSUMERKEY, this.flightDataJsonForDebug);
+      const flightDataJson = this.flightDataJsonForDebug || await this.$downloadFlightDataJson(this.$http, this.$config.ODPT_CONSUMERKEY);
+      const flightData = this.$parseFlightDataJson(flightDataJson);
 
       this.arrivals = flightData.arrivals;
       this.departures = flightData.departures;
