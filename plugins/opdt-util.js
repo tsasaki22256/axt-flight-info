@@ -13,7 +13,7 @@ export function newEmptyData() {
     arrivalInfoSummary: '',
     arrivalInfoText: '',
     arrivalStatus: '',
-    
+
     actualDepartureTime: '',
     isEstimatedDepartureTime: false,
     scheduledDepartureTime: '',
@@ -30,7 +30,7 @@ export function newEmptyData() {
     arrivalDelay: 0,
     departureDelay: 0,
   };
-  
+
   return Object.assign({}, empty)
 }
 
@@ -71,6 +71,8 @@ export function toAirlineName(airlineId) {
 }
 
 export function toShortFlightNumber(numberId) {
+  if (!numberId) return '';
+
   return numberId.replace(/^.+\.[A-Z]+/, '');
 }
 
