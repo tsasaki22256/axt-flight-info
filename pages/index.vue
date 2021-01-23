@@ -180,22 +180,7 @@
     <section class="section section-thin debug-area" v-if="isDebugMode">
       <div class="field">
         <div class="control">
-          <textarea class="textarea is-small textarea-json" placeholder="Departure info (Arrivals)" v-model="debugDepInfoArrJson"></textarea>
-        </div>
-      </div>
-      <div class="field">
-        <div class="control">
-          <textarea class="textarea is-small textarea-json" placeholder="Arrival info (Arrivals)" v-model="debugArrInfoArrJson"></textarea>
-        </div>
-      </div>
-      <div class="field">
-        <div class="control">
-          <textarea class="textarea is-small textarea-json" placeholder="Departure info (Departures)" v-model="debugDepInfoDepJson"></textarea>
-        </div>
-      </div>
-      <div class="field">
-        <div class="control">
-          <textarea class="textarea is-small textarea-json" placeholder="Arrival info (Departures)" v-model="debugArrInfoDepJson"></textarea>
+          <textarea class="textarea is-small textarea-json" placeholder="FlightInformation" v-model="debugFlightDataJson"></textarea>
         </div>
       </div>
     </section>
@@ -240,10 +225,7 @@ export default {
       updating: false,
       mounted: false,
 
-      debugDepInfoArrJson: '',
-      debugArrInfoArrJson: '',
-      debugDepInfoDepJson: '',
-      debugArrInfoDepJson: '',
+      debugFlightDataJson: '',
 
     }
   },
@@ -310,18 +292,9 @@ export default {
 
     flightDataJsonForDebug() {
       if (!this.isDebugMode) return null;
-      if (![this.debugArrInfoArrJson, this.debugDepInfoArrJson, this.debugDepInfoDepJson, this.debugDepInfoDepJson].every(x => x)) return null;
+      if (!this.debugFlightDataJson) return null;
 
-      return {
-        arrivals: {
-          arrivalInfo: JSON.parse(this.debugArrInfoArrJson),
-          departureInfo: JSON.parse(this.debugDepInfoArrJson)
-        },
-        departures: {
-          arrivalInfo: JSON.parse(this.debugArrInfoDepJson),
-          departureInfo: JSON.parse(this.debugDepInfoDepJson)
-        }
-      };
+      return JSON.parse(this.debugFlightDataJson);
     }
   },
 
