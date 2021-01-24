@@ -12,6 +12,9 @@ export default {
       { 'http-equiv': 'x-ua-compatible', content: 'ie=edge' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' }
     ],
+    link: [
+      { rel: 'shortcut icon', href: 'favicon.ico' }
+    ],
     script: [
       { src: 'https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.2.5/polyfill.min.js' }
     ]
