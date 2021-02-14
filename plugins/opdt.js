@@ -272,18 +272,13 @@ export function checkSpotStatus(combined) {
 
   if (a.cancelled || d.cancelled) return '';
 
+  // ステイかマージ不可か判別不能なのでスポット表示を放棄
+  if (a.number === '' || d.number === '') {
+    return '';
+  }
+
   // 到着していて、出発していない
   if (!a.isEstimatedArrivalTime && d.isEstimatedDepartureTime) {
-    return 'on';
-  }
-
-  // 夜間駐機便が出発していない
-  if (a.number === '' && d.isEstimatedDepartureTime) {
-    return 'on';
-  }
-
-  // 夜間駐機便が到着している
-  if (!a.isEstimatedArrivalTime && d.number === '') {
     return 'on';
   }
 
