@@ -184,7 +184,6 @@ export function combineArrivalsAndDepartures(arrivals, departures) {
 
   // 到着便・出発便を連結したデータを作成
   let combined = [];
-  let combinedNoArrival = [];
 
   const NUMBER_PAIR = [
     ['', '402'],
@@ -218,17 +217,40 @@ export function combineArrivalsAndDepartures(arrivals, departures) {
     const arrival = (numArr === '') ? newEmptyData() : dic.arrivals[numArr];
     const departure = (numDep === '') ? newEmptyData() : dic.departures[numDep];
 
-    (numArr === '' ? combinedNoArrival : combined).push({
+    combined.push({
       arrival: arrival,
       departure: departure,
     });
   }
 
-  // ソート
-  combined.sort((a, b) => a.arrival.scheduledArrivalTime > b.arrival.scheduledArrivalTime ? 1 : -1);
-  combinedNoArrival.sort((a, b) => a.departure.scheduledDepartureTime > b.departure.scheduledDepartureTime ? 1 : -1);
+  // NUMBER_PAIRに存在しない便（臨時便など）があれば追加
+  // ただし到着便と出発便が1行にならない
+  const numPairFlat = NUMBER_PAIR.flat();
 
-  combined = [...combinedNoArrival, ...combined];
+  for (let i = 0; i < arrivals.length; i++) {
+    if (!numPairFlat.includes(arrivals[i].number)) {
+      combined.push({
+        arrival: arrivals[i],
+        departure: newEmptyData()
+      });
+    }
+  }
+
+  for (let i = 0; i < departures.length; i++) {
+    if (!numPairFlat.includes(departures[i].number)) {
+      combined.push({
+        arrival: newEmptyData(),
+        departure: departures[i]
+      });
+    }
+  }
+
+  // ソート
+  combined.sort((a, b) => {
+    if (a.arrival.scheduledArrivalTime)
+      return a.arrival.scheduledArrivalTime > b.arrival.scheduledArrivalTime ? 1 : -1;
+    return a.departure.scheduledDepartureTime > b.departure.scheduledDepartureTime ? 1 : -1;
+  });
 
   // 駐機中 or スポットイン／アウト中？
   for (let i = 0; i < combined.length; i++) {
