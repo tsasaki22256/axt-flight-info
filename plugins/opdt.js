@@ -247,9 +247,7 @@ export function combineArrivalsAndDepartures(arrivals, departures) {
 
   // ソート
   combined.sort((a, b) => {
-    if (a.arrival.scheduledArrivalTime)
-      return a.arrival.scheduledArrivalTime > b.arrival.scheduledArrivalTime ? 1 : -1;
-    return a.departure.scheduledDepartureTime > b.departure.scheduledDepartureTime ? 1 : -1;
+    return (a.arrival.scheduledArrivalTime || a.departure.scheduledDepartureTime) > (b.arrival.scheduledArrivalTime || b.departure.scheduledDepartureTime) ? 1 : -1;
   });
 
   // 駐機中 or スポットイン／アウト中？
