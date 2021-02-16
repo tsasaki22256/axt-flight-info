@@ -231,6 +231,10 @@ export default {
   },
 
   mounted() {
+    window.onunhandledrejection = (e) => {
+      console.log(e);
+    };
+
     this.datestr = this.getDateString();
     this.datetimestr = this.getDateTimeString();
 
@@ -306,7 +310,7 @@ export default {
 
       this.updating = true;
 
-      const flightDataJson = this.flightDataJsonForDebug || await this.$downloadFlightDataJson(this.$http, this.$config.ODPT_CONSUMERKEY);
+      const flightDataJson = this.flightDataJsonForDebug || await this.$downloadFlightDataJson(this.$http, this.$axios, this.$config.ODPT_CONSUMERKEY);
       const flightData = this.$parseFlightDataJson(flightDataJson);
 
       this.arrivals = flightData.arrivals;

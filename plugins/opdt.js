@@ -8,14 +8,25 @@ import {
   extractTimeFromDateString,
 } from './opdt-util';
 
-async function downloadFlightDataJson(http, consumerkey) {
+async function downloadFlightDataJson(http, axios, consumerkey) {
   const ODPT_URL_FLIGHTINFOARR = 'https://api.odpt.org/api/v4/odpt:FlightInformationArrival';
   const ODPT_URL_FLIGHTINFODEP = 'https://api.odpt.org/api/v4/odpt:FlightInformationDeparture';
 
-  const axArrivalInfoOfArrivals = http.$get(`${ODPT_URL_FLIGHTINFOARR}?odpt:arrivalAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
-  const axDepartureInfoOfArrivals = http.$get(`${ODPT_URL_FLIGHTINFODEP}?odpt:destinationAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
-  const axArrivalInfoOfDepartures = http.$get(`${ODPT_URL_FLIGHTINFOARR}?odpt:originAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
-  const axDepartureInfoOfDepartures = http.$get(`${ODPT_URL_FLIGHTINFODEP}?odpt:departureAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`);
+  const urlArrivalInfoOfArrivals = `${ODPT_URL_FLIGHTINFOARR}?odpt:arrivalAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`;
+  const axArrivalInfoOfArrivals = http.$get(urlArrivalInfoOfArrivals)
+    .catch((reason, promise) => axios.$get(urlArrivalInfoOfArrivals));
+
+  const urlDepartureInfoOfArrivals = `${ODPT_URL_FLIGHTINFODEP}?odpt:destinationAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`;
+  const axDepartureInfoOfArrivals = http.$get(urlDepartureInfoOfArrivals)
+    .catch((reason, promise) => axios.$get(urlDepartureInfoOfArrivals));
+
+  const urlArrivalInfoOfDepartures = `${ODPT_URL_FLIGHTINFOARR}?odpt:originAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`;
+  const axArrivalInfoOfDepartures = http.$get(urlArrivalInfoOfDepartures)
+    .catch((reason, promise) => axios.$get(urlArrivalInfoOfDepartures));
+
+  const urlDepartureInfoOfDepartures = `${ODPT_URL_FLIGHTINFODEP}?odpt:departureAirport=odpt.Airport:AXT&acl:consumerKey=${consumerkey}`;
+  const axDepartureInfoOfDepartures = http.$get(urlDepartureInfoOfDepartures)
+    .catch((reason, promise) => axios.$get(urlDepartureInfoOfDepartures));
 
   const ret = {
     arrivals: {

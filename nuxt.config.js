@@ -15,9 +15,6 @@ export default {
     link: [
       { rel: 'icon', type: 'image/x-icon', href: 'favicon/favicon.ico' }
     ],
-    script: [
-      { src: 'https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.2.5/polyfill.min.js' }
-    ]
   },
   loading: { color: '#fff' },
   css: ['~/assets/css/main.scss'],
@@ -41,7 +38,8 @@ export default {
   },
   modules: [
     '@nuxtjs/bulma',
-    '@nuxt/http'
+    '@nuxt/http',
+    '@nuxtjs/axios',
   ],
   styleResources: {
     scss: ['~assets/css/vars.scss']
