@@ -225,8 +225,8 @@ export function combineArrivalsAndDepartures(arrivals, departures) {
   for (let i = 0; i < NUMBER_PAIR.length; i++) {
     const numArr = NUMBER_PAIR[i][0];
     const numDep = NUMBER_PAIR[i][1];
-    const arrival = (numArr === '') ? newEmptyData() : dic.arrivals[numArr];
-    const departure = (numDep === '') ? newEmptyData() : dic.departures[numDep];
+    const arrival = (numArr === '' || !dic.arrivals[numArr]) ? newEmptyData() : dic.arrivals[numArr];
+    const departure = (numDep === '' || !dic.departures[numDep]) ? newEmptyData() : dic.departures[numDep];
 
     combined.push({
       arrival: arrival,
