@@ -196,31 +196,8 @@ export function combineArrivalsAndDepartures(arrivals, departures) {
   // 到着便・出発便を連結したデータを作成
   let combined = [];
 
-  const NUMBER_PAIR = [
-    ['', '402'],
-    ['', '1652'],
-    ['161', '162'],
-    ['401', '404'],
-    ['1837', '1838'],
-    ['2171', '2172'],
-    ['1651', '1831'],
-    ['403', '406'],
-    ['2821', '2822'],
-    ['163', '164'],
-    ['1653', '1654'],
-    ['1832', '1833'],
-    ['2173', '2174'],
-    ['405', '408'],
-    ['1839', '1840'],
-    ['165', '166'],
-    ['1834', '1656'],
-    ['2179', '2176'],
-    ['407', '410'],
-    ['2827', '2828'],
-    ['167', '168'],
-    ['1655', ''],
-    ['409', ''],
-  ];
+  // localStorageから到着便／出発便の組のリストを取得
+  const NUMBER_PAIR = loadFlightNumberPairs();
 
   for (let i = 0; i < NUMBER_PAIR.length; i++) {
     const numArr = NUMBER_PAIR[i][0];
@@ -273,6 +250,68 @@ export function combineArrivalsAndDepartures(arrivals, departures) {
   return combined;
 }
 
+function loadFlightNumberPairs() {
+  const DEFAULT_NUMBER_PAIRS = getDefaultFlightNumberPairs();
+
+  if (!window.localStorage) return DEFAULT_NUMBER_PAIRS;
+
+  const numberPairsString = window.localStorage.getItem('flight_number_pairs');
+  if (!numberPairsString) {
+    resetFlightNumberPairs();
+    return DEFAULT_NUMBER_PAIRS;
+  }
+
+  try {
+    const numberPairs = JSON.parse(numberPairsString);
+    return numberPairs;
+  }
+  catch (e) {
+    resetFlightNumberPairs();
+    return DEFAULT_NUMBER_PAIRS;
+  }
+}
+
+function saveFlightNumberPairs(pairs) {
+  if (!window.localStorage) return;
+
+  window.localStorage.setItem('flight_number_pairs', JSON.stringify(pairs));
+}
+
+function resetFlightNumberPairs() {
+  if (!window.localStorage) return;
+
+  window.localStorage.setItem('flight_number_pairs', JSON.stringify(getDefaultFlightNumberPairs()));
+}
+
+function getDefaultFlightNumberPairs() {
+  const DEFAULT_NUMBER_PAIRS = [
+    ['', '402'],
+    ['', '1652'],
+    ['161', '162'],
+    ['401', '404'],
+    ['1837', '1838'],
+    ['2171', '2172'],
+    ['1651', '1831'],
+    ['403', '406'],
+    ['2821', '2822'],
+    ['163', '164'],
+    ['1653', '1654'],
+    ['1832', '1833'],
+    ['2173', '2174'],
+    ['405', '408'],
+    ['1839', '1840'],
+    ['165', '166'],
+    ['1834', '1656'],
+    ['2179', '2176'],
+    ['407', '410'],
+    ['2827', '2828'],
+    ['167', '168'],
+    ['1655', ''],
+    ['409', ''],
+  ];
+  return DEFAULT_NUMBER_PAIRS;
+}
+
 // 航空機がスポットに滞在中 ("on") か、スポットイン／アウト中か ("in" | "out")、不在か("")
 // combined: 到着便・発着便の連結済みデータ
 export function checkSpotStatus(combined) {
@@ -305,4 +344,7 @@ export function checkSpotStatus(combined) {
 export default ({}, inject) => {
   inject('downloadFlightDataJson', downloadFlightDataJson);
   inject('parseFlightDataJson', parseFlightDataJson);
+  inject('loadFlightNumberPairs', loadFlightNumberPairs);
+  inject('saveFlightNumberPairs', saveFlightNumberPairs);
+  inject('resetFlightNumberPairs', resetFlightNumberPairs);
 }

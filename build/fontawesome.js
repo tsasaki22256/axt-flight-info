@@ -2,6 +2,7 @@ const solid = [
   'faAngleDoubleDown',
   'faAngleDoubleUp',
   'faCircle',
+  'faCog',
   'faPlane',
   'faPlaneArrival',
   'faPlaneDeparture',
@@ -17,5 +18,5 @@ const regular = [
 const brands = [
   'faGithub',
 ]
-  
+
 export { solid, regular, brands }

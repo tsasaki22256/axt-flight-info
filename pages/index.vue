@@ -17,6 +17,9 @@
         <button class="button is-small is-white is-outlined" @click="hideCancelled = !hideCancelled">
           {{ hideCancelled ? '欠航便表示' : '欠航便非表示' }}
         </button>
+        <button class="button is-small is-white is-outlined is-hidden-mobile" v-if="isVisibleNumberPairDialogButton" @click="isActiveNumberPairsDialog = !isActiveNumberPairsDialog">
+          <font-awesome-icon icon="cog" size="lg"/>
+        </button>
       </div>
     </section>
 
@@ -186,6 +189,8 @@
     </section>
 
     <PageFooterArea />
+
+    <NumberPairsDialog :active="isActiveNumberPairsDialog" @close-modal="isActiveNumberPairsDialog = !isActiveNumberPairsDialog" />
   </div>
 </template>
 
@@ -220,6 +225,9 @@ export default {
 
       // 欠航便表示／非表示切替用
       hideCancelled: false,
+
+      // 発着便設定ダイアログ表示切り替え
+      isActiveNumberPairsDialog: false,
 
       // ローディング関係
       updating: false,
@@ -299,6 +307,11 @@ export default {
       if (!this.debugFlightDataJson) return null;
 
       return JSON.parse(this.debugFlightDataJson);
+    },
+
+    isVisibleNumberPairDialogButton() {
+      if (!this.mounted) return false;
+      return (window && window.localStorage) ? true : false;
     }
   },
 
