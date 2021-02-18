@@ -205,6 +205,9 @@ export function combineArrivalsAndDepartures(arrivals, departures) {
     const arrival = (numArr === '' || !dic.arrivals[numArr]) ? newEmptyData() : dic.arrivals[numArr];
     const departure = (numDep === '' || !dic.departures[numDep]) ? newEmptyData() : dic.departures[numDep];
 
+    // 両方が空になる場合は無視
+    if (arrival.number === '' && departure.number === '') continue;
+
     combined.push({
       arrival: arrival,
       departure: departure,
