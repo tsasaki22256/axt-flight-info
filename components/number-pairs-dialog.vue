@@ -66,17 +66,8 @@ export default {
     // テキストボックスの内容を現在の設定値で埋める
     resetFlightNumberPairsInput() {
       if (window) {
-        this.pairs = [];
-        for (let i = 0; i < this.PAIRS_LENGTH_MAX; i++) {
-          this.pairs.push(['', '']);
-        }
-
         const pairs = this.$loadFlightNumberPairs();
-        const length = Math.min(pairs.length, this.PAIRS_LENGTH_MAX);
-        for (let i = 0; i < length; i++) {
-          this.pairs[i][0] = pairs[i][0];
-          this.pairs[i][1] = pairs[i][1];
-        }
+        this.setPairsValueToInput(pairs);
       }
     },
 
@@ -99,13 +90,27 @@ export default {
 
     // localStorage及びテキストボックスの内容を初期設定に戻す
     restoreFlightNumberPairs() {
-      this.$resetFlightNumberPairs();
-      this.resetFlightNumberPairsInput();
+      const defaultPairs = this.$getDefaultFlightNumberPairs();
+      this.setPairsValueToInput(defaultPairs);
     },
 
     closeDialog() {
       this.resetFlightNumberPairsInput();
       this.$emit('close-modal');
+    },
+
+    // localStorageの内容をテキストボックスに反映する
+    setPairsValueToInput(pairs) {
+        this.pairs = [];
+        for (let i = 0; i < this.PAIRS_LENGTH_MAX; i++) {
+          this.pairs.push(['', '']);
+        }
+
+        const length = Math.min(pairs.length, this.PAIRS_LENGTH_MAX);
+        for (let i = 0; i < length; i++) {
+          this.pairs[i][0] = pairs[i][0];
+          this.pairs[i][1] = pairs[i][1];
+        }
     }
   }
 }

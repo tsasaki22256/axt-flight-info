@@ -347,4 +347,5 @@ export default ({}, inject) => {
   inject('loadFlightNumberPairs', loadFlightNumberPairs);
   inject('saveFlightNumberPairs', saveFlightNumberPairs);
   inject('resetFlightNumberPairs', resetFlightNumberPairs);
+  inject('getDefaultFlightNumberPairs', getDefaultFlightNumberPairs);
 }
