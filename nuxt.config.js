@@ -37,7 +37,6 @@ export default {
     whitelistPatterns: [/svg-/, /fa-/, /.*\[disabled\].*/]
   },
   modules: [
-    '@nuxtjs/bulma',
     '@nuxt/http',
     '@nuxtjs/axios',
   ],
