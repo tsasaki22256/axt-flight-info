@@ -2,7 +2,7 @@
   <section class="hero is-dark">
     <div class="hero-body custom-hero-body has-text-centered">
       <h1 class="title">
-        秋田空港運行情報{{ updateTime ? '【' + updateTime + '更新】' : '' }}
+        秋田空港運航情報{{ updateTime ? '【' + updateTime + '更新】' : '' }}
       </h1>
     </div>
   </section>

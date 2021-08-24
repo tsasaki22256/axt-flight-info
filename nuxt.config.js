@@ -6,7 +6,7 @@ export default {
   target: 'static',
   modern: 'client',
   head: {
-    title: 'AxtFlightInfo - 秋田空港運行情報',
+    title: 'AxtFlightInfo - 秋田空港運航情報',
     meta: [
       { charset: 'utf-8' },
       { 'http-equiv': 'x-ua-compatible', content: 'ie=edge' },
