@@ -50,6 +50,9 @@ export function toAirportName(airportId) {
     case 'odpt.Airport:NGO':
       airport = '名古屋';
       break;
+    case 'odpt.Airport:OKD':
+      airport = '札幌（丘珠）';
+      break;
   }
 
   return airport;
