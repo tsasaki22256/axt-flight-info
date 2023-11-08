@@ -311,6 +311,10 @@ function getDefaultFlightNumberPairs() {
     ['167', '168'],
     ['1655', ''],
     ['409', ''],
+    ['4685', '4686'],
+    ['28823', '2824'],
+    ['4687', '4688'],
+    ['2825', '2826'],
   ];
   return DEFAULT_NUMBER_PAIRS;
 }
